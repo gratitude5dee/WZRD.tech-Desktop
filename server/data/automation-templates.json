@@ -1,0 +1,30 @@
+[
+  {
+    "id": "template-daily-digest",
+    "title": "Daily Digest",
+    "prompt": "Summarize today’s tasks, meetings, and top priorities.",
+    "schedule": "0 9 * * 1-5",
+    "category": "Productivity"
+  },
+  {
+    "id": "template-release-notes",
+    "title": "Weekly Release Notes",
+    "prompt": "Draft weekly release notes from recent changes and PRs.",
+    "schedule": "0 16 * * 5",
+    "category": "Engineering"
+  },
+  {
+    "id": "template-standup",
+    "title": "Standup Summary",
+    "prompt": "Summarize yesterday’s activity and today’s focus for standup.",
+    "schedule": "0 9 * * 1-5",
+    "category": "Team"
+  },
+  {
+    "id": "template-risk-check",
+    "title": "Risk Check",
+    "prompt": "Scan open tickets for risks and highlight blockers.",
+    "schedule": "0 14 * * 1-5",
+    "category": "Operations"
+  }
+]

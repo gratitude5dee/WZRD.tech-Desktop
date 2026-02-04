@@ -1,0 +1,98 @@
+[
+  {
+    "id": "slack",
+    "name": "Slack",
+    "category": "Communication",
+    "description": "Send updates, search channels, and trigger workflows.",
+    "website": "https://slack.com",
+    "icon": "💬"
+  },
+  {
+    "id": "gmail",
+    "name": "Gmail",
+    "category": "Email",
+    "description": "Draft, search, and triage inbox threads automatically.",
+    "website": "https://mail.google.com",
+    "icon": "✉️"
+  },
+  {
+    "id": "notion",
+    "name": "Notion",
+    "category": "Docs",
+    "description": "Create pages, update databases, and manage knowledge.",
+    "website": "https://notion.so",
+    "icon": "📘"
+  },
+  {
+    "id": "github",
+    "name": "GitHub",
+    "category": "Developer",
+    "description": "Track issues, pull requests, and repo activity.",
+    "website": "https://github.com",
+    "icon": "🐙"
+  },
+  {
+    "id": "google-drive",
+    "name": "Google Drive",
+    "category": "Storage",
+    "description": "Locate files, generate links, and manage folders.",
+    "website": "https://drive.google.com",
+    "icon": "📁"
+  },
+  {
+    "id": "google-calendar",
+    "name": "Google Calendar",
+    "category": "Scheduling",
+    "description": "Create events, check availability, and plan meetings.",
+    "website": "https://calendar.google.com",
+    "icon": "📆"
+  },
+  {
+    "id": "linear",
+    "name": "Linear",
+    "category": "Product",
+    "description": "Create issues, plan sprints, and sync roadmaps.",
+    "website": "https://linear.app",
+    "icon": "📈"
+  },
+  {
+    "id": "jira",
+    "name": "Jira",
+    "category": "Project",
+    "description": "Track epics, bugs, and engineering delivery.",
+    "website": "https://atlassian.com/software/jira",
+    "icon": "🧭"
+  },
+  {
+    "id": "zendesk",
+    "name": "Zendesk",
+    "category": "Support",
+    "description": "Summarize tickets and draft replies.",
+    "website": "https://zendesk.com",
+    "icon": "🎧"
+  },
+  {
+    "id": "hubspot",
+    "name": "HubSpot",
+    "category": "CRM",
+    "description": "Track deals, notes, and lifecycle updates.",
+    "website": "https://hubspot.com",
+    "icon": "📊"
+  },
+  {
+    "id": "salesforce",
+    "name": "Salesforce",
+    "category": "CRM",
+    "description": "Update opportunities and account records.",
+    "website": "https://salesforce.com",
+    "icon": "☁️"
+  },
+  {
+    "id": "figma",
+    "name": "Figma",
+    "category": "Design",
+    "description": "Sync design updates and coordinate reviews.",
+    "website": "https://figma.com",
+    "icon": "🎨"
+  }
+]

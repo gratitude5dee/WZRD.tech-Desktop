@@ -1,4 +1,4 @@
-const { app, BrowserWindow, shell, ipcMain } = require('electron');
+const { app, BrowserWindow, shell, ipcMain, powerSaveBlocker } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const { pathToFileURL } = require('url');
@@ -22,6 +22,7 @@ let mainWindow;
 let backendModule = null;
 let backendPort = 3001;
 let isQuitting = false;
+let powerSaveId = null;
 
 function getUserDataPaths() {
   const userData = app.getPath('userData');
@@ -29,7 +30,9 @@ function getUserDataPaths() {
     userData,
     settingsPath: path.join(userData, 'wzrdtech-settings.json'),
     envPath: path.join(userData, '.env'),
-    opencodeConfigPath: path.join(userData, 'opencode.json')
+    opencodeConfigPath: path.join(userData, 'opencode.json'),
+    dbPath: path.join(userData, 'wzrdtech.db'),
+    configPath: path.join(userData, 'config.toml')
   };
 }
 
@@ -79,6 +82,8 @@ function applyEnv(settings) {
   process.env.OPENCODE_API_KEY = settings.opencodeApiKey || '';
   const { opencodeConfigPath } = getUserDataPaths();
   process.env.OPENCODE_CONFIG_PATH = opencodeConfigPath;
+  const { dbPath } = getUserDataPaths();
+  process.env.WZRDTECH_DB_PATH = dbPath;
 }
 
 async function getBackendModule() {
@@ -115,7 +120,7 @@ function createWindow() {
     width: 1200,
     height: 800,
     title: 'WZRD.tech',
-    icon: path.join(__dirname, 'assets', 'wzrdtech-icon.png'),
+    icon: path.join(__dirname, 'assets', 'wzrdtech-icon-purple.png'),
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
@@ -201,5 +206,36 @@ ipcMain.handle('backend:restart', async () => {
   } catch (err) {
     console.error('[BACKEND] Restart failed:', err);
     return { success: false, error: err.message };
+  }
+});
+
+ipcMain.handle('power:toggle', (_event, enabled) => {
+  if (enabled) {
+    if (!powerSaveId) {
+      powerSaveId = powerSaveBlocker.start('prevent-app-suspension');
+    }
+  } else if (powerSaveId) {
+    powerSaveBlocker.stop(powerSaveId);
+    powerSaveId = null;
+  }
+  return { enabled: !!powerSaveId };
+});
+
+ipcMain.handle('config:open', () => {
+  const { configPath } = getUserDataPaths();
+  if (!fs.existsSync(configPath)) {
+    fs.writeFileSync(configPath, '# WZRD.tech configuration\n');
+  }
+  shell.openPath(configPath);
+  return { success: true };
+});
+
+ipcMain.handle('license:get', () => {
+  try {
+    const licensePath = path.join(__dirname, 'LICENSE');
+    const text = fs.readFileSync(licensePath, 'utf8');
+    return { success: true, text };
+  } catch (err) {
+    return { success: false, text: 'License file not found.' };
   }
 });

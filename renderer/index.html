@@ -8,6 +8,14 @@
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
+  <div class="intro-overlay" id="introOverlay" aria-hidden="true">
+    <div class="intro-orb">
+      <img src="../assets/wzrdtechlogo.png" alt="" class="intro-orb-img" id="introOrbImg">
+      <div class="intro-orb-fallback"></div>
+    </div>
+    <div class="intro-wordmark">WZRD.tech</div>
+    <div class="intro-subtitle">by 5-Dee Studios</div>
+  </div>
   <div class="app-container">
     <!-- Left Sidebar - Chat History -->
     <aside class="left-sidebar" id="leftSidebar">
@@ -31,6 +39,70 @@
           </svg>
         </button>
       </div>
+      <div class="nav-section">
+        <div class="nav-title">Workspace</div>
+        <button class="nav-item active" data-view="dashboard">
+          <span class="nav-dot"></span>
+          Dashboard
+        </button>
+        <button class="nav-item" data-view="chat">
+          <span class="nav-dot"></span>
+          Chat
+        </button>
+        <button class="nav-item" data-view="integrations">
+          <span class="nav-dot"></span>
+          Integrations
+        </button>
+        <button class="nav-item" data-view="automations">
+          <span class="nav-dot"></span>
+          Automations
+        </button>
+        <button class="nav-item" data-view="memory">
+          <span class="nav-dot"></span>
+          Memory
+        </button>
+        <button class="nav-item" data-view="activity">
+          <span class="nav-dot"></span>
+          Activity
+        </button>
+        <button class="nav-item" data-view="skills">
+          <span class="nav-dot"></span>
+          Skills
+        </button>
+        <button class="nav-item" data-view="clawd">
+          <span class="nav-dot"></span>
+          OpenClawd <span class="nav-badge">Beta</span>
+        </button>
+        <button class="nav-item" data-view="settings">
+          <span class="nav-dot"></span>
+          Settings
+        </button>
+      </div>
+      <div class="chat-history-header">
+        <div class="nav-title chat-history-title">Chats</div>
+        <button class="filter-btn" id="threadFilterBtn" title="Filter threads">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 4h18l-7 8v6l-4 2v-8L3 4z"></path>
+          </svg>
+        </button>
+        <div class="thread-filter-popover hidden" id="threadFilterPopover">
+          <div class="filter-section">
+            <div class="filter-title">Organize</div>
+            <button class="filter-option" data-filter-group="organize" data-filter-value="project">By project</button>
+            <button class="filter-option" data-filter-group="organize" data-filter-value="chronological">Chronological list</button>
+          </div>
+          <div class="filter-section">
+            <div class="filter-title">Sort by</div>
+            <button class="filter-option" data-filter-group="sort" data-filter-value="created">Created</button>
+            <button class="filter-option" data-filter-group="sort" data-filter-value="updated">Updated</button>
+          </div>
+          <div class="filter-section">
+            <div class="filter-title">Show</div>
+            <button class="filter-option" data-filter-group="show" data-filter-value="all">All threads</button>
+            <button class="filter-option" data-filter-group="show" data-filter-value="relevant">Relevant</button>
+          </div>
+        </div>
+      </div>
       <div class="chat-history-list" id="chatHistoryList">
         <!-- Chat history items will be added here -->
       </div>
@@ -45,13 +117,61 @@
 
     <!-- Main Content -->
     <div class="main-content">
+      <!-- Dashboard View -->
+      <div class="dashboard-view view" id="dashboardView">
+        <div class="dashboard-hero glass-panel">
+          <div class="dashboard-brand">
+            <img src="../assets/wzrdtechlogo.png" alt="WZRD.tech" class="wordmark wordmark--small" id="wordmarkDash">
+            <div class="wordmark-fallback wordmark-fallback--small">WZRD.tech</div>
+          </div>
+          <p class="dashboard-subtitle">Liquid-glass AI workspace by 5-Dee Studios</p>
+        </div>
+        <div class="dashboard-actions glass-panel">
+          <div class="section-title">Top Actions</div>
+          <div class="actions-row">
+            <button class="action-chip" data-action="new-automation">New Automation</button>
+            <button class="action-chip" data-action="add-memory">Add Memory</button>
+            <button class="action-chip" data-action="connect-integration">Connect Integration</button>
+            <button class="action-chip" data-action="run-automation">Run Automation</button>
+          </div>
+        </div>
+        <div class="dashboard-grid">
+          <div class="stat-card glass-panel">
+            <div class="stat-label">Integrations</div>
+            <div class="stat-value" id="statIntegrations">0</div>
+          </div>
+          <div class="stat-card glass-panel">
+            <div class="stat-label">Automations</div>
+            <div class="stat-value" id="statAutomations">0</div>
+          </div>
+          <div class="stat-card glass-panel">
+            <div class="stat-label">Memories</div>
+            <div class="stat-value" id="statMemories">0</div>
+          </div>
+          <div class="stat-card glass-panel">
+            <div class="stat-label">Recent Activity</div>
+            <div class="stat-value" id="statActivity">0</div>
+          </div>
+        </div>
+        <div class="dashboard-split">
+          <div class="glass-panel dashboard-panel">
+            <div class="section-title">Pinned Memory</div>
+            <div class="memory-preview" id="dashboardMemoryPreview"></div>
+          </div>
+          <div class="glass-panel dashboard-panel">
+            <div class="section-title">Latest Activity</div>
+            <div class="activity-list" id="dashboardActivityList"></div>
+          </div>
+        </div>
+      </div>
+
       <!-- Home View (shown when no messages) -->
-      <div class="home-view" id="homeView">
+      <div class="home-view hidden" id="homeView">
       <div class="greeting-section">
         <div class="greeting">
           <div class="brand-hero">
             <div class="wordmark-wrap">
-              <img src="../assets/wzrdtech-wordmark.png" alt="WZRD.tech" class="wordmark" id="wordmarkHero">
+              <img src="../assets/wzrdtechlogo.png" alt="WZRD.tech" class="wordmark" id="wordmarkHero">
               <div class="wordmark-fallback" id="wordmarkHeroFallback">WZRD.tech</div>
             </div>
             <p class="tagline">by 5-Dee Studios</p>
@@ -77,6 +197,11 @@
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <line x1="12" y1="5" x2="12" y2="19"></line>
                     <line x1="5" y1="12" x2="19" y2="12"></line>
+                  </svg>
+                </button>
+                <button type="button" class="control-btn memory-toggle" id="homePinnedMemoryToggle" title="Use pinned memory">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
                   </svg>
                 </button>
                 <button type="button" class="control-btn thinking-btn" id="homeThinkingBtn" title="Extended thinking ⇧⌘E">
@@ -167,7 +292,7 @@
         <header class="chat-header">
           <div class="chat-header-left">
             <div class="chat-brand">
-              <img src="../assets/wzrdtech-wordmark.png" alt="WZRD.tech" class="wordmark wordmark--small" id="wordmarkChat">
+              <img src="../assets/wzrdtechlogo.png" alt="WZRD.tech" class="wordmark wordmark--small" id="wordmarkChat">
               <div class="wordmark-fallback wordmark-fallback--small">WZRD.tech</div>
             </div>
             <button class="chat-title-btn">
@@ -215,6 +340,11 @@
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <line x1="12" y1="5" x2="12" y2="19"></line>
                         <line x1="5" y1="12" x2="19" y2="12"></line>
+                      </svg>
+                    </button>
+                    <button type="button" class="control-btn memory-toggle" id="chatPinnedMemoryToggle" title="Use pinned memory">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
                       </svg>
                     </button>
                     <button type="button" class="control-btn thinking-btn" id="chatThinkingBtn" title="Extended thinking ⇧⌘E">
@@ -313,7 +443,7 @@
         </div>
 
         <!-- Steps/Todos Section -->
-        <div class="sidebar-section">
+        <div class="sidebar-section steps-section">
           <div class="section-header" id="stepsHeader">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <polyline points="6 9 12 15 18 9"></polyline>
@@ -327,7 +457,7 @@
         </div>
 
         <!-- Tool Calls Section -->
-        <div class="sidebar-section">
+        <div class="sidebar-section tool-calls-section">
           <div class="section-header">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
@@ -342,6 +472,644 @@
 
       </aside>
     </div>
+
+      <!-- Integrations View -->
+      <div class="integrations-view view hidden" id="integrationsView">
+        <div class="view-header">
+          <div>
+            <h2>Integrations</h2>
+            <p class="view-subtitle">Connect your workspace to the tools you already use.</p>
+          </div>
+          <div class="header-actions">
+            <button class="ghost-btn" id="integrationRefreshBtn">Refresh</button>
+            <button class="primary-btn" id="openComposioBtn">Open Composio</button>
+          </div>
+        </div>
+        <div class="glass-panel composio-playground" id="composioPlayground">
+          <div class="section-title">Tool Router Playground</div>
+          <div class="form-row">
+            <div class="form-field">
+              <label for="composioPlaygroundUserId">External user id (optional)</label>
+              <input type="text" id="composioPlaygroundUserId" placeholder="default-user">
+            </div>
+          </div>
+          <div class="form-field">
+            <label for="composioPlaygroundPrompt">Prompt</label>
+            <textarea id="composioPlaygroundPrompt" rows="3" placeholder="Send an email to ..."></textarea>
+          </div>
+          <div class="modal-actions">
+            <button class="accent-btn" id="composioPlaygroundRunBtn">Run</button>
+            <button class="ghost-btn" id="composioPlaygroundCopyBtn">Copy output</button>
+          </div>
+          <div class="settings-status" id="composioPlaygroundStatus"></div>
+          <pre class="playground-output" id="composioPlaygroundOutput"></pre>
+        </div>
+        <div class="integrations-grid" id="integrationsGrid"></div>
+      </div>
+
+      <!-- Automations View -->
+      <div class="automations-view view hidden" id="automationsView">
+        <div class="view-header">
+          <div>
+            <h2>Automations</h2>
+            <p class="view-subtitle">Schedule workflows that run on your behalf.</p>
+          </div>
+          <div class="header-actions">
+            <a class="link-btn" id="automationsLearnMore" href="https://github.com/gratitude5dee/WZRD.tech-Desktop" target="_blank" rel="noreferrer">Learn more</a>
+            <button class="primary-btn" id="newAutomationBtn">+ New automation</button>
+          </div>
+        </div>
+        <div class="glass-panel automation-templates">
+          <div class="section-title">Templates</div>
+          <div class="templates-grid" id="automationTemplates"></div>
+        </div>
+        <div class="automations-layout">
+          <div class="glass-panel automation-form">
+            <div class="section-title">Create Automation</div>
+            <div class="form-field">
+              <label for="automationName">Name</label>
+              <input type="text" id="automationName" placeholder="Weekly status summary">
+            </div>
+            <div class="form-field">
+              <label for="automationPrompt">Prompt</label>
+              <textarea id="automationPrompt" rows="4" placeholder="Summarize open tasks and send to Slack."></textarea>
+            </div>
+            <div class="form-row">
+              <div class="form-field">
+                <label for="automationSchedule">Cron Schedule</label>
+                <input type="text" id="automationSchedule" placeholder="0 9 * * 1">
+              </div>
+              <div class="form-field">
+                <label for="automationProvider">Provider</label>
+                <select id="automationProvider">
+                  <option value="claude">Claude</option>
+                  <option value="opencode">Opencode</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-field">
+              <label for="automationModel">Model (optional)</label>
+              <input type="text" id="automationModel" placeholder="claude-sonnet-4-5-20250514">
+            </div>
+            <div class="form-field inline-field">
+              <input type="checkbox" id="automationEnabled" checked>
+              <label for="automationEnabled">Enabled</label>
+            </div>
+            <div class="modal-actions">
+              <button class="ghost-btn" id="automationClearBtn">Clear</button>
+              <button class="accent-btn" id="automationCreateBtn">Create</button>
+            </div>
+            <div class="settings-status" id="automationStatus"></div>
+          </div>
+          <div class="glass-panel automation-list">
+            <div class="section-title">Active Automations</div>
+            <div id="automationsList"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Memory View -->
+      <div class="memory-view view hidden" id="memoryView">
+        <div class="view-header">
+          <div>
+            <h2>Memory Vault</h2>
+            <p class="view-subtitle">Capture context, preferences, and reusable knowledge.</p>
+          </div>
+          <div class="memory-actions">
+            <input type="text" id="memorySearch" placeholder="Search memory...">
+            <button class="primary-btn" id="memorySearchBtn">Search</button>
+          </div>
+        </div>
+        <div class="memory-layout">
+          <div class="glass-panel memory-form">
+            <div class="section-title">New Memory</div>
+            <div class="form-field">
+              <label for="memoryTitle">Title</label>
+              <input type="text" id="memoryTitle" placeholder="Client preferences">
+            </div>
+            <div class="form-field">
+              <label for="memoryContent">Details</label>
+              <textarea id="memoryContent" rows="4" placeholder="Prefers midnight blue palettes and arcane typography."></textarea>
+            </div>
+            <div class="form-field">
+              <label for="memoryTags">Tags (comma separated)</label>
+              <input type="text" id="memoryTags" placeholder="brand, design, preferences">
+            </div>
+            <div class="form-field inline-field">
+              <input type="checkbox" id="memoryPinned">
+              <label for="memoryPinned">Pin to dashboard</label>
+            </div>
+            <div class="modal-actions">
+              <button class="ghost-btn" id="memoryClearBtn">Clear</button>
+              <button class="accent-btn" id="memoryCreateBtn">Save Memory</button>
+            </div>
+            <div class="settings-status" id="memoryStatus"></div>
+          </div>
+          <div class="glass-panel memory-list">
+            <div class="section-title">Stored Memories</div>
+            <div id="memoryList"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Activity View -->
+      <div class="activity-view view hidden" id="activityView">
+        <div class="view-header">
+          <div>
+            <h2>Activity</h2>
+            <p class="view-subtitle">Everything your workspace has been doing.</p>
+          </div>
+        </div>
+        <div class="glass-panel activity-feed" id="activityFeed"></div>
+      </div>
+
+      <!-- Skills View -->
+      <div class="skills-view view hidden" id="skillsView">
+        <div class="view-header">
+          <div>
+            <h2>Skills</h2>
+            <p class="view-subtitle">Give WZRD.tech superpowers. <a class="link-inline" href="https://github.com/gratitude5dee/WZRD.tech-Desktop" target="_blank" rel="noreferrer">Learn more</a></p>
+          </div>
+          <div class="skills-actions">
+            <input type="text" id="skillsSearch" placeholder="Search skills...">
+            <button class="ghost-btn" id="skillsRefreshBtn">Refresh</button>
+            <button class="primary-btn" id="skillsAddBtn">New skill</button>
+          </div>
+        </div>
+        <div class="glass-panel skills-add hidden" id="skillsAddPanel">
+          <div class="section-title">Add Skill via GitHub URL</div>
+          <div class="form-row">
+            <div class="form-field">
+              <label for="skillNameInput">Name</label>
+              <input type="text" id="skillNameInput" placeholder="Custom Skill">
+            </div>
+            <div class="form-field">
+              <label for="skillUrlInput">GitHub URL</label>
+              <input type="text" id="skillUrlInput" placeholder="https://github.com/org/repo">
+            </div>
+          </div>
+          <div class="modal-actions">
+            <button class="ghost-btn" id="skillCancelBtn">Cancel</button>
+            <button class="accent-btn" id="skillSaveBtn">Save Skill</button>
+          </div>
+          <div class="settings-status" id="skillStatus"></div>
+        </div>
+      <div class="skills-list" id="skillsList"></div>
+      </div>
+
+      <!-- OpenClawd View -->
+      <div class="clawd-view view hidden" id="clawdView">
+        <div class="view-header">
+          <div>
+            <h2>OpenClawd <span class="nav-badge">Beta</span></h2>
+            <p class="view-subtitle">Run the Clawd messaging gateway inside WZRD.tech.</p>
+          </div>
+          <div class="header-actions">
+            <button class="ghost-btn" id="clawdRestartBtn">Restart</button>
+            <button class="primary-btn" id="clawdStartBtn">Start</button>
+            <button class="accent-btn" id="clawdStopBtn">Stop</button>
+          </div>
+        </div>
+
+        <div class="clawd-grid">
+          <div class="clawd-col">
+            <div class="glass-panel clawd-card">
+              <div class="section-title">Gateway Status</div>
+              <div class="clawd-status-row">
+                <div class="status-chip" id="clawdStatusChip">Stopped</div>
+                <div class="clawd-status-meta" id="clawdStatusMeta">Not running</div>
+              </div>
+              <div class="settings-status" id="clawdStatusMessage"></div>
+            </div>
+
+            <div class="glass-panel clawd-card">
+              <div class="section-title">Adapters</div>
+              <div class="settings-row">
+                <div>
+                  <div class="settings-label">WhatsApp</div>
+                  <div class="settings-desc">QR login (requires optional deps).</div>
+                </div>
+                <label class="toggle">
+                  <input type="checkbox" id="clawdWhatsappEnabled">
+                  <span class="toggle-track"></span>
+                </label>
+              </div>
+              <div class="form-row">
+                <input type="text" id="clawdWhatsappAllowedDMs" placeholder="Allowed DMs (comma, * for all)">
+                <input type="text" id="clawdWhatsappAllowedGroups" placeholder="Allowed groups (comma)">
+              </div>
+              <div class="settings-row">
+                <div>
+                  <div class="settings-label">Respond to mentions only</div>
+                  <div class="settings-desc">For groups, only reply when @mentioned.</div>
+                </div>
+                <label class="toggle">
+                  <input type="checkbox" id="clawdWhatsappMentionsOnly">
+                  <span class="toggle-track"></span>
+                </label>
+              </div>
+
+              <div class="settings-divider"></div>
+
+              <div class="settings-row">
+                <div>
+                  <div class="settings-label">Telegram</div>
+                  <div class="settings-desc">Bot token via @BotFather (requires optional deps).</div>
+                </div>
+                <label class="toggle">
+                  <input type="checkbox" id="clawdTelegramEnabled">
+                  <span class="toggle-track"></span>
+                </label>
+              </div>
+              <div class="form-row">
+                <input type="text" id="clawdTelegramToken" placeholder="Telegram bot token">
+              </div>
+
+              <div class="settings-divider"></div>
+
+              <div class="settings-row">
+                <div>
+                  <div class="settings-label">Signal</div>
+                  <div class="settings-desc">signal-cli required (optional deps).</div>
+                </div>
+                <label class="toggle">
+                  <input type="checkbox" id="clawdSignalEnabled">
+                  <span class="toggle-track"></span>
+                </label>
+              </div>
+              <div class="form-row">
+                <input type="text" id="clawdSignalPhone" placeholder="+1234567890">
+                <input type="text" id="clawdSignalCliPath" placeholder="signal-cli">
+              </div>
+
+              <div class="settings-divider"></div>
+
+              <div class="settings-row">
+                <div>
+                  <div class="settings-label">iMessage (macOS)</div>
+                  <div class="settings-desc">Requires Messages.app signed in and imsg CLI.</div>
+                </div>
+                <label class="toggle">
+                  <input type="checkbox" id="clawdImessageEnabled">
+                  <span class="toggle-track"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="glass-panel clawd-card">
+              <div class="section-title">Browser</div>
+              <div class="settings-row">
+                <div>
+                  <div class="settings-label">Enable browser tools</div>
+                  <div class="settings-desc">Playwright required when enabled.</div>
+                </div>
+                <label class="toggle">
+                  <input type="checkbox" id="clawdBrowserEnabled">
+                  <span class="toggle-track"></span>
+                </label>
+              </div>
+              <div class="form-row">
+                <select id="clawdBrowserMode">
+                  <option value="clawd">Clawd (isolated)</option>
+                  <option value="chrome">Chrome (CDP)</option>
+                </select>
+                <input type="number" id="clawdBrowserCdpPort" placeholder="9222">
+              </div>
+              <div class="modal-actions">
+                <button class="accent-btn" id="clawdSaveConfigBtn">Save configuration</button>
+              </div>
+              <div class="settings-status" id="clawdConfigStatus"></div>
+            </div>
+          </div>
+
+          <div class="glass-panel clawd-card clawd-logs-panel">
+            <div class="section-title">Live Logs</div>
+            <pre class="clawd-logs-output" id="clawdLogs"></pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- Settings View -->
+      <div class="settings-view view hidden" id="settingsView">
+        <div class="view-header">
+          <div>
+            <button class="link-btn back-link" id="settingsBackBtn">← Back to app</button>
+            <h2>Settings</h2>
+            <p class="view-subtitle">Tune every part of your WZRD.tech workspace.</p>
+          </div>
+        </div>
+        <div class="settings-layout">
+          <aside class="settings-sidebar">
+            <button class="settings-nav-item active" data-section="general">General</button>
+            <button class="settings-nav-item" data-section="configuration">Configuration</button>
+            <button class="settings-nav-item" data-section="personalization">Personalization</button>
+            <button class="settings-nav-item" data-section="mcp">MCP servers</button>
+            <button class="settings-nav-item" data-section="git">Git</button>
+            <button class="settings-nav-item" data-section="environments">Environments</button>
+            <button class="settings-nav-item" data-section="worktrees">Worktrees</button>
+            <button class="settings-nav-item" data-section="archived">Archived threads</button>
+          </aside>
+          <div class="settings-content">
+            <div class="settings-section" data-section="general">
+              <div class="settings-card">
+                <div class="settings-row">
+                  <div>
+                    <div class="settings-label">Default open destination</div>
+                    <div class="settings-desc">Choose the first view shown on launch.</div>
+                  </div>
+                  <select id="settingDefaultDestination">
+                    <option value="dashboard">Dashboard</option>
+                    <option value="chat">Chat</option>
+                    <option value="integrations">Integrations</option>
+                    <option value="automations">Automations</option>
+                    <option value="memory">Memory</option>
+                    <option value="activity">Activity</option>
+                    <option value="skills">Skills</option>
+                    <option value="clawd">OpenClawd</option>
+                    <option value="settings">Settings</option>
+                  </select>
+                </div>
+                <div class="settings-row">
+                  <div>
+                    <div class="settings-label">Thread detail</div>
+                    <div class="settings-desc">Control how much tool detail appears.</div>
+                  </div>
+                  <div class="segmented" id="settingThreadDetail">
+                    <button data-value="full">Full</button>
+                    <button data-value="compact">Compact</button>
+                    <button data-value="minimal">Minimal</button>
+                  </div>
+                </div>
+                <div class="settings-row">
+                  <div>
+                    <div class="settings-label">Prevent sleep while running</div>
+                    <div class="settings-desc">Keep the machine awake during tasks.</div>
+                  </div>
+                  <label class="toggle">
+                    <input type="checkbox" id="settingPreventSleep">
+                    <span class="toggle-track"></span>
+                  </label>
+                </div>
+                <div class="settings-row">
+                  <div>
+                    <div class="settings-label">Require ⌘ + Enter to send</div>
+                    <div class="settings-desc">Use keyboard shortcut for multiline prompts.</div>
+                  </div>
+                  <label class="toggle">
+                    <input type="checkbox" id="settingCmdEnter">
+                    <span class="toggle-track"></span>
+                  </label>
+                </div>
+                <div class="settings-row">
+                  <div>
+                    <div class="settings-label">Follow-up behavior</div>
+                    <div class="settings-desc">Queue follow-ups or interrupt current run.</div>
+                  </div>
+                  <div class="segmented" id="settingFollowUp">
+                    <button data-value="queue">Queue</button>
+                    <button data-value="interrupt">Interrupt</button>
+                  </div>
+                </div>
+              </div>
+              <div class="settings-card">
+                <div class="settings-row">
+                  <div>
+                    <div class="settings-label">Theme</div>
+                    <div class="settings-desc">Use light, dark, or system theme.</div>
+                  </div>
+                  <div class="segmented" id="settingTheme">
+                    <button data-value="light">Light</button>
+                    <button data-value="dark">Dark</button>
+                    <button data-value="system">System</button>
+                  </div>
+                </div>
+                <div class="settings-row">
+                  <div>
+                    <div class="settings-label">Opaque window background</div>
+                    <div class="settings-desc">Use solid background instead of translucency.</div>
+                  </div>
+                  <label class="toggle">
+                    <input type="checkbox" id="settingOpaque">
+                    <span class="toggle-track"></span>
+                  </label>
+                </div>
+                <div class="settings-row">
+                  <div>
+                    <div class="settings-label">Pointer cursor</div>
+                    <div class="settings-desc">Use pointer on interactive elements.</div>
+                  </div>
+                  <label class="toggle">
+                    <input type="checkbox" id="settingPointerCursor">
+                    <span class="toggle-track"></span>
+                  </label>
+                </div>
+                <div class="settings-row">
+                  <div>
+                    <div class="settings-label">Sans font size</div>
+                    <div class="settings-desc">Adjust UI font size.</div>
+                  </div>
+                  <input type="number" id="settingSansSize" min="12" max="18" value="14">
+                </div>
+                <div class="settings-row">
+                  <div>
+                    <div class="settings-label">Code font size</div>
+                    <div class="settings-desc">Adjust code block size.</div>
+                  </div>
+                  <input type="number" id="settingCodeSize" min="11" max="18" value="13">
+                </div>
+              </div>
+            </div>
+
+            <div class="settings-section hidden" data-section="configuration">
+              <div class="settings-card">
+                <div class="settings-row">
+                  <div>
+                    <div class="settings-label">Approval policy</div>
+                    <div class="settings-desc">When WZRD.tech asks permission.</div>
+                  </div>
+                  <select id="settingApprovalPolicy">
+                    <option value="default">Default</option>
+                    <option value="always">Always ask</option>
+                    <option value="auto">Auto-approve safe actions</option>
+                  </select>
+                </div>
+                <div class="settings-row">
+                  <div>
+                    <div class="settings-label">Sandbox mode</div>
+                    <div class="settings-desc">Filesystem access for agents.</div>
+                  </div>
+                  <select id="settingSandboxMode">
+                    <option value="default">Default</option>
+                    <option value="strict">Strict</option>
+                    <option value="relaxed">Relaxed</option>
+                  </select>
+                </div>
+                <div class="settings-row">
+                  <div>
+                    <div class="settings-label">config.toml</div>
+                    <div class="settings-desc">Edit your configuration file.</div>
+                  </div>
+                  <button class="ghost-btn" id="openConfigBtn">Open config.toml</button>
+                </div>
+                <div class="settings-row">
+                  <div>
+                    <div class="settings-label">Open source licenses</div>
+                    <div class="settings-desc">Third-party notices.</div>
+                  </div>
+                  <button class="ghost-btn" id="openLicenseBtn">View</button>
+                </div>
+                <div class="settings-row">
+                  <div>
+                    <div class="settings-label">API keys</div>
+                    <div class="settings-desc">Manage provider credentials.</div>
+                  </div>
+                  <button class="ghost-btn" id="openApiKeysBtn">Manage</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="settings-section hidden" data-section="personalization">
+              <div class="settings-card">
+                <div class="settings-row">
+                  <div>
+                    <div class="settings-label">Workspace name</div>
+                    <div class="settings-desc">Appears in the header and hero.</div>
+                  </div>
+                  <input type="text" id="settingWorkspaceName" placeholder="WZRD.tech">
+                </div>
+                <div class="settings-row">
+                  <div>
+                    <div class="settings-label">Tagline</div>
+                    <div class="settings-desc">Short descriptor under the wordmark.</div>
+                  </div>
+                  <input type="text" id="settingTagline" placeholder="Liquid-glass AI workspace">
+                </div>
+                <div class="settings-row">
+                  <div>
+                    <div class="settings-label">Greeting text</div>
+                    <div class="settings-desc">Display message on the home hero.</div>
+                  </div>
+                  <input type="text" id="settingGreeting" placeholder="Ask me anything">
+                </div>
+                <div class="settings-row">
+                  <div>
+                    <div class="settings-label">Default provider</div>
+                    <div class="settings-desc">Provider for new threads.</div>
+                  </div>
+                  <select id="settingDefaultProvider">
+                    <option value="claude">Claude</option>
+                    <option value="opencode">Opencode</option>
+                  </select>
+                </div>
+                <div class="settings-row">
+                  <div>
+                    <div class="settings-label">Default model</div>
+                    <div class="settings-desc">Preselect model for new threads.</div>
+                  </div>
+                  <input type="text" id="settingDefaultModel" placeholder="claude-sonnet-4-5-20250514">
+                </div>
+              </div>
+            </div>
+
+            <div class="settings-section hidden" data-section="mcp">
+              <div class="settings-card">
+                <div class="settings-row">
+                  <div>
+                    <div class="settings-label">Add MCP Server</div>
+                    <div class="settings-desc">Register a new MCP endpoint.</div>
+                  </div>
+                </div>
+                <div class="form-row">
+                  <input type="text" id="mcpName" placeholder="Server name">
+                  <input type="text" id="mcpUrl" placeholder="https://server/mcp">
+                  <select id="mcpStatus">
+                    <option value="connected">Connected</option>
+                    <option value="disabled">Disabled</option>
+                  </select>
+                  <button class="accent-btn" id="mcpAddBtn">Add</button>
+                </div>
+              </div>
+              <div class="settings-card">
+                <div class="settings-list" id="mcpList"></div>
+              </div>
+            </div>
+
+            <div class="settings-section hidden" data-section="git">
+              <div class="settings-card">
+                <div class="settings-row">
+                  <div>
+                    <div class="settings-label">Add Git Profile</div>
+                    <div class="settings-desc">Store default repo settings.</div>
+                  </div>
+                </div>
+                <div class="form-row">
+                  <input type="text" id="gitName" placeholder="Profile name">
+                  <input type="text" id="gitRemote" placeholder="https://github.com/org/repo.git">
+                  <input type="text" id="gitBranch" placeholder="main">
+                  <button class="accent-btn" id="gitAddBtn">Add</button>
+                </div>
+              </div>
+              <div class="settings-card">
+                <div class="settings-list" id="gitList"></div>
+              </div>
+            </div>
+
+            <div class="settings-section hidden" data-section="environments">
+              <div class="settings-card">
+                <div class="settings-row">
+                  <div>
+                    <div class="settings-label">Add Environment</div>
+                    <div class="settings-desc">Define key-value bundles.</div>
+                  </div>
+                </div>
+                <div class="form-row">
+                  <input type="text" id="envName" placeholder="Production">
+                  <input type="text" id="envVars" placeholder="KEY=value, KEY2=value">
+                  <button class="accent-btn" id="envAddBtn">Add</button>
+                </div>
+              </div>
+              <div class="settings-card">
+                <div class="settings-list" id="envList"></div>
+              </div>
+            </div>
+
+            <div class="settings-section hidden" data-section="worktrees">
+              <div class="settings-card">
+                <div class="settings-row">
+                  <div>
+                    <div class="settings-label">Add Worktree</div>
+                    <div class="settings-desc">Track additional repos.</div>
+                  </div>
+                </div>
+                <div class="form-row">
+                  <input type="text" id="worktreeName" placeholder="Feature branch">
+                  <input type="text" id="worktreePath" placeholder="/path/to/worktree">
+                  <select id="worktreeStatus">
+                    <option value="active">Active</option>
+                    <option value="paused">Paused</option>
+                  </select>
+                  <button class="accent-btn" id="worktreeAddBtn">Add</button>
+                </div>
+              </div>
+              <div class="settings-card">
+                <div class="settings-list" id="worktreeList"></div>
+              </div>
+            </div>
+
+            <div class="settings-section hidden" data-section="archived">
+              <div class="settings-card">
+                <div class="settings-row">
+                  <div>
+                    <div class="settings-label">Archived Threads</div>
+                    <div class="settings-desc">Restore or remove archived chats.</div>
+                  </div>
+                </div>
+                <div class="settings-list" id="archivedList"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div><!-- end main-content -->
 
     <!-- Right Sidebar Expand Button (visible when collapsed) -->
@@ -385,6 +1153,51 @@
         <button class="ghost-btn" id="settingsCancelBtn">Cancel</button>
         <button class="primary-btn" id="settingsSaveBtn">Save</button>
         <button class="accent-btn" id="settingsRestartBtn">Restart Backend</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- License Modal -->
+  <div class="modal hidden" id="licenseModal">
+    <div class="modal-backdrop" id="licenseBackdrop"></div>
+    <div class="modal-card glass-panel">
+      <div class="modal-header">
+        <h2>Open Source Licenses</h2>
+        <button class="modal-close-btn" id="licenseCloseBtn" title="Close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <pre class="license-text" id="licenseContent">Loading...</pre>
+      </div>
+      <div class="modal-actions">
+        <button class="primary-btn" id="licenseCloseBtnFooter">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Automation History Modal -->
+  <div class="modal hidden" id="automationHistoryModal">
+    <div class="modal-backdrop" id="automationHistoryBackdrop"></div>
+    <div class="modal-card glass-panel modal-wide">
+      <div class="modal-header">
+        <h2 id="automationHistoryTitle">Automation History</h2>
+        <button class="modal-close-btn" id="automationHistoryCloseBtn" title="Close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="settings-status" id="automationHistoryStatus"></div>
+        <div class="runs-list" id="automationRunsList"></div>
+      </div>
+      <div class="modal-actions">
+        <button class="primary-btn" id="automationHistoryCloseBtnFooter">Close</button>
       </div>
     </div>
   </div>

@@ -1,0 +1,50 @@
+[
+  {
+    "id": "atlas",
+    "name": "Atlas Control",
+    "description": "Manage tabs, bookmarks, and history in ChatGPT Atlas.",
+    "source": "curated",
+    "url": "https://github.com/gratitude5dee/codex-wiggums",
+    "installed": 1
+  },
+  {
+    "id": "imagegen",
+    "name": "Image Gen",
+    "description": "Generate and edit images via OpenAI Image API.",
+    "source": "curated",
+    "url": "https://platform.openai.com/docs",
+    "installed": 1
+  },
+  {
+    "id": "openai-docs",
+    "name": "OpenAI Docs",
+    "description": "Reference official OpenAI product documentation.",
+    "source": "curated",
+    "url": "https://platform.openai.com/docs",
+    "installed": 1
+  },
+  {
+    "id": "playwright",
+    "name": "Playwright",
+    "description": "Automate real browser flows for testing and scraping.",
+    "source": "curated",
+    "url": "https://playwright.dev",
+    "installed": 0
+  },
+  {
+    "id": "skill-installer",
+    "name": "Skill Installer",
+    "description": "Install curated skills or from GitHub.",
+    "source": "curated",
+    "url": "https://github.com",
+    "installed": 1
+  },
+  {
+    "id": "sora",
+    "name": "Sora Video",
+    "description": "Generate and manage AI video via Sora.",
+    "source": "curated",
+    "url": "https://platform.openai.com/docs",
+    "installed": 0
+  }
+]

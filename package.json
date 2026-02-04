@@ -17,9 +17,12 @@
     "@anthropic-ai/claude-agent-sdk": "^0.2.7",
     "@composio/core": "latest",
     "@opencode-ai/sdk": "latest",
+    "better-sqlite3": "^12.4.2",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "node-cron": "^3.0.3",
+    "zod": "^4.0.0"
   },
   "devDependencies": {
     "electron": "^39.2.7",
@@ -34,6 +37,7 @@
       "preload.js",
       "renderer/**/*",
       "server/**/*",
+      "clawd/**/*",
       "assets/**/*",
       "package.json",
       "package-lock.json"
@@ -43,7 +47,7 @@
       "target": [
         "dmg"
       ],
-      "icon": "assets/wzrdtech-icon.png"
+      "icon": "assets/wzrdtech-icon-purple.png"
     }
   }
 }

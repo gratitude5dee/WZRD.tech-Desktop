@@ -29,6 +29,186 @@ const chatHistoryList = document.getElementById('chatHistoryList');
 const leftSidebar = document.getElementById('leftSidebar');
 const leftSidebarToggle = document.getElementById('leftSidebarToggle');
 const leftSidebarExpand = document.getElementById('leftSidebarExpand');
+const chatHistoryTitle = document.querySelector('.chat-history-title');
+const navItems = document.querySelectorAll('.nav-item');
+
+// Views
+const dashboardView = document.getElementById('dashboardView');
+const integrationsView = document.getElementById('integrationsView');
+const automationsView = document.getElementById('automationsView');
+const memoryView = document.getElementById('memoryView');
+const activityView = document.getElementById('activityView');
+
+// Dashboard
+const statIntegrations = document.getElementById('statIntegrations');
+const statAutomations = document.getElementById('statAutomations');
+const statMemories = document.getElementById('statMemories');
+const statActivity = document.getElementById('statActivity');
+const dashboardActivityList = document.getElementById('dashboardActivityList');
+const dashboardMemoryPreview = document.getElementById('dashboardMemoryPreview');
+const actionChips = document.querySelectorAll('.action-chip');
+
+// Integrations
+const integrationsGrid = document.getElementById('integrationsGrid');
+const openComposioBtn = document.getElementById('openComposioBtn');
+const integrationRefreshBtn = document.getElementById('integrationRefreshBtn');
+const composioPlaygroundUserId = document.getElementById('composioPlaygroundUserId');
+const composioPlaygroundPrompt = document.getElementById('composioPlaygroundPrompt');
+const composioPlaygroundRunBtn = document.getElementById('composioPlaygroundRunBtn');
+const composioPlaygroundCopyBtn = document.getElementById('composioPlaygroundCopyBtn');
+const composioPlaygroundStatus = document.getElementById('composioPlaygroundStatus');
+const composioPlaygroundOutput = document.getElementById('composioPlaygroundOutput');
+
+// Automations
+const automationsList = document.getElementById('automationsList');
+const automationName = document.getElementById('automationName');
+const automationPrompt = document.getElementById('automationPrompt');
+const automationSchedule = document.getElementById('automationSchedule');
+const automationProvider = document.getElementById('automationProvider');
+const automationModel = document.getElementById('automationModel');
+const automationEnabled = document.getElementById('automationEnabled');
+const automationCreateBtn = document.getElementById('automationCreateBtn');
+const automationClearBtn = document.getElementById('automationClearBtn');
+const automationStatus = document.getElementById('automationStatus');
+
+// Memory
+const memoryList = document.getElementById('memoryList');
+const memoryTitle = document.getElementById('memoryTitle');
+const memoryContent = document.getElementById('memoryContent');
+const memoryTags = document.getElementById('memoryTags');
+const memoryPinned = document.getElementById('memoryPinned');
+const memoryCreateBtn = document.getElementById('memoryCreateBtn');
+const memoryClearBtn = document.getElementById('memoryClearBtn');
+const memoryStatus = document.getElementById('memoryStatus');
+const memorySearch = document.getElementById('memorySearch');
+const memorySearchBtn = document.getElementById('memorySearchBtn');
+
+// Activity
+const activityFeed = document.getElementById('activityFeed');
+const introOverlay = document.getElementById('introOverlay');
+const introOrbImg = document.getElementById('introOrbImg');
+
+// Skills
+const skillsView = document.getElementById('skillsView');
+const skillsList = document.getElementById('skillsList');
+const skillsSearch = document.getElementById('skillsSearch');
+const skillsRefreshBtn = document.getElementById('skillsRefreshBtn');
+const skillsAddBtn = document.getElementById('skillsAddBtn');
+const skillsAddPanel = document.getElementById('skillsAddPanel');
+const skillNameInput = document.getElementById('skillNameInput');
+const skillUrlInput = document.getElementById('skillUrlInput');
+const skillSaveBtn = document.getElementById('skillSaveBtn');
+const skillCancelBtn = document.getElementById('skillCancelBtn');
+const skillStatus = document.getElementById('skillStatus');
+
+// OpenClawd
+const clawdView = document.getElementById('clawdView');
+const clawdStartBtn = document.getElementById('clawdStartBtn');
+const clawdStopBtn = document.getElementById('clawdStopBtn');
+const clawdRestartBtn = document.getElementById('clawdRestartBtn');
+const clawdStatusChip = document.getElementById('clawdStatusChip');
+const clawdStatusMeta = document.getElementById('clawdStatusMeta');
+const clawdStatusMessage = document.getElementById('clawdStatusMessage');
+const clawdSaveConfigBtn = document.getElementById('clawdSaveConfigBtn');
+const clawdConfigStatus = document.getElementById('clawdConfigStatus');
+const clawdLogs = document.getElementById('clawdLogs');
+const clawdWhatsappEnabled = document.getElementById('clawdWhatsappEnabled');
+const clawdWhatsappAllowedDMs = document.getElementById('clawdWhatsappAllowedDMs');
+const clawdWhatsappAllowedGroups = document.getElementById('clawdWhatsappAllowedGroups');
+const clawdWhatsappMentionsOnly = document.getElementById('clawdWhatsappMentionsOnly');
+const clawdTelegramEnabled = document.getElementById('clawdTelegramEnabled');
+const clawdTelegramToken = document.getElementById('clawdTelegramToken');
+const clawdSignalEnabled = document.getElementById('clawdSignalEnabled');
+const clawdSignalPhone = document.getElementById('clawdSignalPhone');
+const clawdSignalCliPath = document.getElementById('clawdSignalCliPath');
+const clawdImessageEnabled = document.getElementById('clawdImessageEnabled');
+const clawdBrowserEnabled = document.getElementById('clawdBrowserEnabled');
+const clawdBrowserMode = document.getElementById('clawdBrowserMode');
+const clawdBrowserCdpPort = document.getElementById('clawdBrowserCdpPort');
+
+// Settings
+const settingsView = document.getElementById('settingsView');
+const settingsNavItems = document.querySelectorAll('.settings-nav-item');
+const settingsSections = document.querySelectorAll('.settings-section');
+const settingDefaultDestination = document.getElementById('settingDefaultDestination');
+const settingThreadDetail = document.getElementById('settingThreadDetail');
+const settingPreventSleep = document.getElementById('settingPreventSleep');
+const settingCmdEnter = document.getElementById('settingCmdEnter');
+const settingFollowUp = document.getElementById('settingFollowUp');
+const settingTheme = document.getElementById('settingTheme');
+const settingOpaque = document.getElementById('settingOpaque');
+const settingPointerCursor = document.getElementById('settingPointerCursor');
+const settingSansSize = document.getElementById('settingSansSize');
+const settingCodeSize = document.getElementById('settingCodeSize');
+const settingApprovalPolicy = document.getElementById('settingApprovalPolicy');
+const settingSandboxMode = document.getElementById('settingSandboxMode');
+const openConfigBtn = document.getElementById('openConfigBtn');
+const openLicenseBtn = document.getElementById('openLicenseBtn');
+const openApiKeysBtn = document.getElementById('openApiKeysBtn');
+const settingWorkspaceName = document.getElementById('settingWorkspaceName');
+const settingTagline = document.getElementById('settingTagline');
+const settingGreeting = document.getElementById('settingGreeting');
+const settingDefaultProvider = document.getElementById('settingDefaultProvider');
+const settingDefaultModel = document.getElementById('settingDefaultModel');
+const mcpName = document.getElementById('mcpName');
+const mcpUrl = document.getElementById('mcpUrl');
+const mcpStatus = document.getElementById('mcpStatus');
+const mcpAddBtn = document.getElementById('mcpAddBtn');
+const mcpList = document.getElementById('mcpList');
+const gitName = document.getElementById('gitName');
+const gitRemote = document.getElementById('gitRemote');
+const gitBranch = document.getElementById('gitBranch');
+const gitAddBtn = document.getElementById('gitAddBtn');
+const gitList = document.getElementById('gitList');
+const envName = document.getElementById('envName');
+const envVars = document.getElementById('envVars');
+const envAddBtn = document.getElementById('envAddBtn');
+const envList = document.getElementById('envList');
+const worktreeName = document.getElementById('worktreeName');
+const worktreePath = document.getElementById('worktreePath');
+const worktreeStatus = document.getElementById('worktreeStatus');
+const worktreeAddBtn = document.getElementById('worktreeAddBtn');
+const worktreeList = document.getElementById('worktreeList');
+const archivedList = document.getElementById('archivedList');
+
+// License modal
+const licenseModal = document.getElementById('licenseModal');
+const licenseBackdrop = document.getElementById('licenseBackdrop');
+const licenseCloseBtn = document.getElementById('licenseCloseBtn');
+const licenseCloseBtnFooter = document.getElementById('licenseCloseBtnFooter');
+const licenseContent = document.getElementById('licenseContent');
+
+// Templates
+const automationTemplates = document.getElementById('automationTemplates');
+
+// Branding personalization
+const heroTagline = document.querySelector('.tagline');
+const heroSubtag = document.querySelector('.subtag');
+const introWordmark = document.querySelector('.intro-wordmark');
+const wordmarkFallbacks = document.querySelectorAll('.wordmark-fallback');
+
+// Pinned memory toggle
+const homePinnedMemoryToggle = document.getElementById('homePinnedMemoryToggle');
+const chatPinnedMemoryToggle = document.getElementById('chatPinnedMemoryToggle');
+
+// Threads filter
+const threadFilterBtn = document.getElementById('threadFilterBtn');
+const threadFilterPopover = document.getElementById('threadFilterPopover');
+
+// Automations header
+const newAutomationBtn = document.getElementById('newAutomationBtn');
+
+// Settings back
+const settingsBackBtn = document.getElementById('settingsBackBtn');
+
+// Automation history modal
+const automationHistoryModal = document.getElementById('automationHistoryModal');
+const automationHistoryBackdrop = document.getElementById('automationHistoryBackdrop');
+const automationHistoryCloseBtn = document.getElementById('automationHistoryCloseBtn');
+const automationHistoryCloseBtnFooter = document.getElementById('automationHistoryCloseBtnFooter');
+const automationHistoryTitle = document.getElementById('automationHistoryTitle');
+const automationHistoryStatus = document.getElementById('automationHistoryStatus');
+const automationRunsList = document.getElementById('automationRunsList');
 
 // DOM Elements - Settings
 const settingsBtn = document.getElementById('settingsBtn');
@@ -53,13 +233,47 @@ let selectedProvider = 'claude';
 let selectedModel = 'claude-sonnet-4-5-20250514';
 let thinkingMode = 'normal'; // 'normal' or 'extended'
 let isWaitingForResponse = false;
+let pendingMessages = [];
+let currentChatCreatedAt = null;
 
 let activeBrowserSession = null; // { url: string, sessionId: string, inlineElement: HTMLElement }
 let browserDisplayMode = 'hidden'; // 'inline' | 'sidebar' | 'hidden'
 
+// Chat context toggles (local-only)
+let usePinnedMemoryInChat = true;
+
 // Multi-chat state
 let allChats = [];
 let currentChatId = null;
+
+// Workspace view state
+let currentView = 'dashboard';
+let integrationsCache = [];
+let automationsCache = [];
+let memoryCache = [];
+let activityCache = [];
+let activityInterval = null;
+let skillsCache = [];
+let settingsCache = {};
+let followUpBehavior = 'queue';
+let requireCmdEnter = false;
+let threadDetailLevel = 'full';
+let defaultDestination = 'dashboard';
+let systemThemeMedia = null;
+let lastView = 'dashboard';
+let threadView = {
+  organize: 'chronological',
+  sort: 'updated',
+  show: 'all'
+};
+
+// Activity highlight state
+let activityHighlightTs = null;
+
+// OpenClawd state
+let clawdConfigCache = null;
+let clawdLogsCursor = 0;
+let clawdLogInterval = null;
 
 // Model configurations per provider
 const providerModels = {
@@ -87,9 +301,15 @@ function init() {
   updateGreeting();
   setupEventListeners();
   setupWordmarkFallback();
+  setupIntroAnimation();
+  setupNavigation();
+  loadThreadViewPrefs();
+  loadChatContextPrefs();
   loadAllChats();
   renderChatHistory();
-  homeInput.focus();
+  initializeSettings().then(() => {
+    setActiveView(defaultDestination || 'dashboard');
+  });
 }
 
 function generateId() {
@@ -105,9 +325,12 @@ function saveState() {
     return;
   }
 
+  const existingChat = allChats.find(c => c.id === currentChatId);
   const chatData = {
     id: currentChatId,
     title: chatTitle.textContent,
+    archived: existingChat?.archived || false,
+    createdAt: existingChat?.createdAt || currentChatCreatedAt || Date.now(),
     messages: Array.from(chatMessages.children).map(msg => {
       const contentDiv = msg.querySelector('.message-content');
       const rawContent = contentDiv?.dataset.rawContent || contentDiv?.textContent || '';
@@ -149,6 +372,14 @@ function loadAllChats() {
   try {
     const saved = localStorage.getItem('allChats');
     allChats = saved ? JSON.parse(saved) : [];
+    allChats.forEach(chat => {
+      if (chat.archived === undefined) {
+        chat.archived = false;
+      }
+      if (!chat.createdAt) {
+        chat.createdAt = chat.updatedAt || Date.now();
+      }
+    });
     currentChatId = localStorage.getItem('currentChatId');
 
     // Restore global provider/model settings
@@ -174,11 +405,21 @@ function loadAllChats() {
     if (currentChatId) {
       const chat = allChats.find(c => c.id === currentChatId);
       if (chat) {
-        loadChat(chat);
+        if (chat.archived) {
+          currentChatId = null;
+          localStorage.removeItem('currentChatId');
+        } else {
+          loadChat(chat);
+        }
       } else {
         currentChatId = null;
         localStorage.removeItem('currentChatId');
       }
+    }
+
+    const storedLastView = localStorage.getItem('lastView');
+    if (storedLastView) {
+      lastView = storedLastView;
     }
   } catch (err) {
     console.error('Failed to load chats:', err);
@@ -209,6 +450,7 @@ function loadChat(chat) {
   currentChatId = chat.id;
   chatTitle.textContent = chat.title;
   isFirstMessage = false;
+  currentChatCreatedAt = chat.createdAt || chat.updatedAt || Date.now();
   todos = chat.todos || [];
   toolCalls = chat.toolCalls || [];
 
@@ -299,8 +541,115 @@ function renderChatHistory() {
 
   // Sort by updated time (most recent first)
   const sortedChats = [...allChats].sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+  const visibleChats = sortedChats.filter(chat => !chat.archived);
+  const filteredChats = applyThreadFilters(visibleChats);
 
-  sortedChats.forEach(chat => {
+  if (filteredChats.length === 0) {
+    chatHistoryList.innerHTML = '<div class="chat-history-empty">No chats yet</div>';
+    return;
+  }
+
+  if (threadView.organize === 'project') {
+    const grouped = new Map();
+    filteredChats.forEach(chat => {
+      const group = getProjectGroup(chat.title || '');
+      if (!grouped.has(group)) grouped.set(group, []);
+      grouped.get(group).push(chat);
+    });
+
+    Array.from(grouped.keys()).sort().forEach(group => {
+      const header = document.createElement('div');
+      header.className = 'chat-group-title';
+      header.textContent = group;
+      chatHistoryList.appendChild(header);
+
+      grouped.get(group).forEach(chat => {
+        chatHistoryList.appendChild(renderChatItem(chat));
+      });
+    });
+  } else {
+    filteredChats.forEach(chat => {
+      chatHistoryList.appendChild(renderChatItem(chat));
+    });
+  }
+}
+
+function applyThreadFilters(chats) {
+  const now = Date.now();
+  let result = [...chats];
+
+  if (threadView.show === 'relevant') {
+    const cutoff = now - 24 * 60 * 60 * 1000;
+    result = result.filter(chat => (chat.updatedAt || 0) >= cutoff);
+  }
+
+  const sortKey = threadView.sort === 'created' ? 'createdAt' : 'updatedAt';
+  result.sort((a, b) => (b[sortKey] || 0) - (a[sortKey] || 0));
+  return result;
+}
+
+function getProjectGroup(title) {
+  if (!title) return 'General';
+  const separators = [':', ' - ', '/'];
+  let cut = -1;
+  separators.forEach(sep => {
+    const idx = title.indexOf(sep);
+    if (idx > 0 && (cut === -1 || idx < cut)) {
+      cut = idx;
+    }
+  });
+  const group = cut > 0 ? title.slice(0, cut).trim() : '';
+  return group || 'General';
+}
+
+function loadThreadViewPrefs() {
+  threadView.organize = localStorage.getItem('threadView.organize') || 'chronological';
+  threadView.sort = localStorage.getItem('threadView.sort') || 'updated';
+  threadView.show = localStorage.getItem('threadView.show') || 'all';
+  applyThreadFilterUI();
+}
+
+function saveThreadViewPrefs() {
+  localStorage.setItem('threadView.organize', threadView.organize);
+  localStorage.setItem('threadView.sort', threadView.sort);
+  localStorage.setItem('threadView.show', threadView.show);
+}
+
+function applyThreadFilterUI() {
+  if (!threadFilterPopover) return;
+  threadFilterPopover.querySelectorAll('.filter-option').forEach(btn => {
+    const group = btn.dataset.filterGroup;
+    const value = btn.dataset.filterValue;
+    btn.classList.toggle('active', threadView[group] === value);
+  });
+  if (threadFilterBtn) {
+    const isDefault = threadView.organize === 'chronological' &&
+      threadView.sort === 'updated' &&
+      threadView.show === 'all';
+    threadFilterBtn.classList.toggle('active', !isDefault);
+  }
+}
+
+function loadChatContextPrefs() {
+  const saved = localStorage.getItem('chat.usePinnedMemory');
+  if (saved === null) {
+    usePinnedMemoryInChat = true;
+  } else {
+    usePinnedMemoryInChat = saved === 'true';
+  }
+  updatePinnedMemoryToggleUI();
+}
+
+function updatePinnedMemoryToggleUI() {
+  [homePinnedMemoryToggle, chatPinnedMemoryToggle].forEach(btn => {
+    if (!btn) return;
+    btn.classList.toggle('active', usePinnedMemoryInChat);
+    btn.classList.toggle('inactive', !usePinnedMemoryInChat);
+    btn.setAttribute('aria-pressed', usePinnedMemoryInChat ? 'true' : 'false');
+  });
+}
+
+function renderChatItem(chat) {
     const item = document.createElement('div');
     item.className = 'chat-history-item' + (chat.id === currentChatId ? ' active' : '');
     item.innerHTML = `
@@ -308,6 +657,13 @@ function renderChatHistory() {
         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
       </svg>
       <span class="chat-title">${escapeHtml(chat.title || 'New chat')}</span>
+      <button class="archive-chat-btn" onclick="archiveChat('${chat.id}', event)" title="Archive">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 8v13H3V8"></path>
+          <path d="M1 3h22v5H1z"></path>
+          <path d="M10 12h4"></path>
+        </svg>
+      </button>
       <button class="delete-chat-btn" onclick="deleteChat('${chat.id}', event)" title="Delete">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -316,12 +672,11 @@ function renderChatHistory() {
       </button>
     `;
     item.onclick = (e) => {
-      if (!e.target.closest('.delete-chat-btn')) {
+      if (!e.target.closest('.delete-chat-btn') && !e.target.closest('.archive-chat-btn')) {
         switchToChat(chat.id);
       }
     };
-    chatHistoryList.appendChild(item);
-  });
+    return item;
 }
 
 // Switch to a different chat
@@ -360,13 +715,45 @@ window.deleteChat = function(chatId, event) {
     } else {
       currentChatId = null;
       localStorage.removeItem('currentChatId');
-      homeView.classList.remove('hidden');
-      chatView.classList.add('hidden');
       isFirstMessage = true;
+      if (currentView === 'chat') {
+        showChatWorkspace();
+      }
     }
   }
 
   renderChatHistory();
+}
+
+window.archiveChat = async function(chatId, event) {
+  event.stopPropagation();
+
+  const chat = allChats.find(c => c.id === chatId);
+  if (!chat || chat.archived) return;
+
+  chat.archived = true;
+  localStorage.setItem('allChats', JSON.stringify(allChats));
+
+  if (currentChatId === chatId) {
+    currentChatId = null;
+    localStorage.removeItem('currentChatId');
+    isFirstMessage = true;
+    showChatWorkspace();
+  }
+
+  try {
+    if (window.electronAPI?.createArchivedThread) {
+      await window.electronAPI.createArchivedThread({
+        id: chat.id,
+        title: chat.title || 'New chat'
+      });
+    }
+  } catch (err) {
+    console.error('[ARCHIVE] Failed to archive thread:', err);
+  }
+
+  renderChatHistory();
+  loadArchivedThreadsList();
 }
 
 // Update greeting based on time of day
@@ -411,6 +798,119 @@ function setupEventListeners() {
   if (settingsSaveBtn) settingsSaveBtn.addEventListener('click', saveSettingsFromUI);
   if (settingsRestartBtn) settingsRestartBtn.addEventListener('click', restartBackendFromUI);
 
+  // Automations
+  if (automationCreateBtn) automationCreateBtn.addEventListener('click', handleCreateAutomation);
+  if (automationClearBtn) automationClearBtn.addEventListener('click', clearAutomationForm);
+
+  // Memory
+  if (memoryCreateBtn) memoryCreateBtn.addEventListener('click', handleCreateMemory);
+  if (memoryClearBtn) memoryClearBtn.addEventListener('click', clearMemoryForm);
+  if (memorySearchBtn) memorySearchBtn.addEventListener('click', () => loadMemory(true));
+  if (memorySearch) {
+    memorySearch.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        loadMemory(true);
+      }
+    });
+  }
+
+  // Skills
+  if (skillsRefreshBtn) skillsRefreshBtn.addEventListener('click', loadSkills);
+  if (skillsAddBtn) skillsAddBtn.addEventListener('click', () => toggleSkillsAddPanel(true));
+  if (skillCancelBtn) skillCancelBtn.addEventListener('click', () => toggleSkillsAddPanel(false));
+  if (skillSaveBtn) skillSaveBtn.addEventListener('click', handleAddSkill);
+  if (skillsSearch) {
+    skillsSearch.addEventListener('input', () => renderSkills());
+  }
+
+  // Composio playground
+  if (composioPlaygroundRunBtn) composioPlaygroundRunBtn.addEventListener('click', runComposioPlayground);
+  if (composioPlaygroundCopyBtn) {
+    composioPlaygroundCopyBtn.addEventListener('click', async () => {
+      const text = composioPlaygroundOutput?.textContent || '';
+      if (!text) return;
+      try {
+        await navigator.clipboard.writeText(text);
+        setComposioPlaygroundStatus('Copied output.', 'success');
+        setTimeout(() => setComposioPlaygroundStatus(''), 1200);
+      } catch (_err) {
+        setComposioPlaygroundStatus('Copy failed.', 'error');
+      }
+    });
+  }
+
+  // OpenClawd
+  if (clawdStartBtn) clawdStartBtn.addEventListener('click', handleClawdStart);
+  if (clawdStopBtn) clawdStopBtn.addEventListener('click', handleClawdStop);
+  if (clawdRestartBtn) clawdRestartBtn.addEventListener('click', handleClawdRestart);
+  if (clawdSaveConfigBtn) clawdSaveConfigBtn.addEventListener('click', handleClawdSaveConfig);
+
+  // Settings view navigation
+  settingsNavItems.forEach(btn => {
+    btn.addEventListener('click', () => {
+      selectSettingsSection(btn.dataset.section);
+    });
+  });
+
+  // Settings view controls
+  setupSettingsControlListeners();
+
+  // License modal
+  if (openLicenseBtn) openLicenseBtn.addEventListener('click', openLicenseModal);
+  if (licenseCloseBtn) licenseCloseBtn.addEventListener('click', closeLicenseModal);
+  if (licenseCloseBtnFooter) licenseCloseBtnFooter.addEventListener('click', closeLicenseModal);
+  if (licenseBackdrop) licenseBackdrop.addEventListener('click', closeLicenseModal);
+
+  // Automation history modal
+  if (automationHistoryCloseBtn) automationHistoryCloseBtn.addEventListener('click', closeAutomationHistory);
+  if (automationHistoryCloseBtnFooter) automationHistoryCloseBtnFooter.addEventListener('click', closeAutomationHistory);
+  if (automationHistoryBackdrop) automationHistoryBackdrop.addEventListener('click', closeAutomationHistory);
+
+  // Open config + API keys
+  if (openConfigBtn) openConfigBtn.addEventListener('click', handleOpenConfigFile);
+  if (openApiKeysBtn) openApiKeysBtn.addEventListener('click', openSettings);
+
+  // Settings list CRUD
+  if (mcpAddBtn) mcpAddBtn.addEventListener('click', handleAddMcpServer);
+  if (gitAddBtn) gitAddBtn.addEventListener('click', handleAddGitProfile);
+  if (envAddBtn) envAddBtn.addEventListener('click', handleAddEnvironment);
+  if (worktreeAddBtn) worktreeAddBtn.addEventListener('click', handleAddWorktree);
+
+  // Threads filter
+  if (threadFilterBtn && threadFilterPopover) {
+    threadFilterBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      threadFilterPopover.classList.toggle('hidden');
+    });
+    threadFilterPopover.querySelectorAll('.filter-option').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const group = btn.dataset.filterGroup;
+        const value = btn.dataset.filterValue;
+        threadView[group] = value;
+        saveThreadViewPrefs();
+        applyThreadFilterUI();
+        renderChatHistory();
+      });
+    });
+  }
+
+  if (newAutomationBtn) {
+    newAutomationBtn.addEventListener('click', () => {
+      setActiveView('automations');
+      if (automationName) {
+        automationName.focus();
+        automationName.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    });
+  }
+
+  if (settingsBackBtn) {
+    settingsBackBtn.addEventListener('click', () => {
+      setActiveView(lastView || 'dashboard');
+    });
+  }
+
   // File attachment buttons
   const homeAttachBtn = document.getElementById('homeAttachBtn');
   const chatAttachBtn = document.getElementById('chatAttachBtn');
@@ -422,6 +922,17 @@ function setupEventListeners() {
   homeFileInput.addEventListener('change', (e) => handleFileSelect(e, 'home'));
   chatFileInput.addEventListener('change', (e) => handleFileSelect(e, 'chat'));
 
+  // Pinned memory toggle buttons
+  ;[homePinnedMemoryToggle, chatPinnedMemoryToggle].forEach(btn => {
+    if (!btn) return;
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      usePinnedMemoryInChat = !usePinnedMemoryInChat;
+      localStorage.setItem('chat.usePinnedMemory', usePinnedMemoryInChat ? 'true' : 'false');
+      updatePinnedMemoryToggleUI();
+    });
+  });
+
   // Setup dropdowns
   setupDropdowns();
 
@@ -429,6 +940,9 @@ function setupEventListeners() {
   document.addEventListener('click', (e) => {
     if (!e.target.closest('.dropdown-container')) {
       document.querySelectorAll('.dropdown-container.open').forEach(d => d.classList.remove('open'));
+    }
+    if (threadFilterPopover && !e.target.closest('#threadFilterPopover') && !e.target.closest('#threadFilterBtn')) {
+      threadFilterPopover.classList.add('hidden');
     }
   });
 }
@@ -438,10 +952,13 @@ function setupWordmarkFallback() {
   const heroFallback = document.getElementById('wordmarkHeroFallback');
   const chatImg = document.getElementById('wordmarkChat');
   const chatFallback = document.querySelector('.wordmark-fallback--small');
+  const dashImg = document.getElementById('wordmarkDash');
+  const dashFallback = dashboardView?.querySelector('.wordmark-fallback--small');
 
   [
     { img: heroImg, fallback: heroFallback },
-    { img: chatImg, fallback: chatFallback }
+    { img: chatImg, fallback: chatFallback },
+    { img: dashImg, fallback: dashFallback }
   ].forEach(({ img, fallback }) => {
     if (!img || !fallback) return;
     fallback.style.display = 'none';
@@ -456,10 +973,152 @@ function setupWordmarkFallback() {
   });
 }
 
+function setupIntroAnimation() {
+  if (!introOverlay) return;
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (prefersReduced) {
+    introOverlay.style.display = 'none';
+    return;
+  }
+
+  if (introOrbImg) {
+    introOrbImg.addEventListener('error', () => {
+      introOrbImg.style.display = 'none';
+    });
+  }
+
+  setTimeout(() => {
+    introOverlay.style.display = 'none';
+  }, 3200);
+}
+
+function setupNavigation() {
+  navItems.forEach(item => {
+    item.addEventListener('click', () => {
+      setActiveView(item.dataset.view);
+    });
+  });
+
+  actionChips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      const action = chip.dataset.action;
+      if (action === 'new-automation') {
+        setActiveView('automations');
+        automationName?.focus();
+      } else if (action === 'add-memory') {
+        setActiveView('memory');
+        memoryTitle?.focus();
+      } else if (action === 'connect-integration') {
+        setActiveView('integrations');
+      } else if (action === 'run-automation') {
+        setActiveView('automations');
+      }
+    });
+  });
+
+  if (openComposioBtn) {
+    openComposioBtn.addEventListener('click', () => {
+      window.open('https://platform.composio.dev', '_blank');
+    });
+  }
+
+  if (integrationRefreshBtn) {
+    integrationRefreshBtn.addEventListener('click', () => {
+      loadIntegrations(true);
+    });
+  }
+}
+
+function hideAllViews() {
+  [dashboardView, integrationsView, automationsView, memoryView, activityView, skillsView, clawdView, settingsView].forEach(view => {
+    if (view) view.classList.add('hidden');
+  });
+  homeView.classList.add('hidden');
+  chatView.classList.add('hidden');
+}
+
+function setActiveView(viewName) {
+  if (currentView === 'clawd' && viewName !== 'clawd') {
+    stopClawdPolling();
+  }
+  if (viewName !== 'settings') {
+    lastView = viewName;
+    localStorage.setItem('lastView', lastView);
+  }
+  currentView = viewName;
+  navItems.forEach(item => {
+    item.classList.toggle('active', item.dataset.view === viewName);
+  });
+
+  hideAllViews();
+
+  if (viewName === 'chat') {
+    showChatWorkspace();
+    if (chatHistoryList) chatHistoryList.classList.remove('hidden');
+    if (chatHistoryTitle) chatHistoryTitle.classList.remove('hidden');
+    return;
+  }
+
+  if (chatHistoryList) chatHistoryList.classList.add('hidden');
+  if (chatHistoryTitle) chatHistoryTitle.classList.add('hidden');
+
+  if (viewName === 'dashboard' && dashboardView) {
+    dashboardView.classList.remove('hidden');
+    loadDashboardData();
+  }
+  if (viewName === 'integrations' && integrationsView) {
+    integrationsView.classList.remove('hidden');
+    loadIntegrations();
+  }
+  if (viewName === 'automations' && automationsView) {
+    automationsView.classList.remove('hidden');
+    loadAutomationTemplates();
+    loadAutomations();
+  }
+  if (viewName === 'memory' && memoryView) {
+    memoryView.classList.remove('hidden');
+    loadMemory();
+  }
+  if (viewName === 'activity' && activityView) {
+    activityView.classList.remove('hidden');
+    loadActivity(true);
+  }
+  if (viewName === 'skills' && skillsView) {
+    skillsView.classList.remove('hidden');
+    loadSkills();
+  }
+  if (viewName === 'clawd' && clawdView) {
+    clawdView.classList.remove('hidden');
+    loadClawdUi();
+  }
+  if (viewName === 'settings' && settingsView) {
+    settingsView.classList.remove('hidden');
+    selectSettingsSection('general');
+    loadSettingsLists();
+  }
+}
+
+function showChatWorkspace() {
+  if (isFirstMessage || !currentChatId) {
+    homeView.classList.remove('hidden');
+    chatView.classList.add('hidden');
+  } else {
+    homeView.classList.add('hidden');
+    chatView.classList.remove('hidden');
+  }
+  if (messageInput) messageInput.focus();
+}
+
 function setSettingsStatus(message = '', tone = 'neutral') {
   if (!settingsStatus) return;
   settingsStatus.textContent = message;
   settingsStatus.dataset.tone = tone;
+}
+
+function setSkillStatus(message = '', tone = 'neutral') {
+  if (!skillStatus) return;
+  skillStatus.textContent = message;
+  skillStatus.dataset.tone = tone;
 }
 
 async function loadSettingsIntoUI() {
@@ -512,6 +1171,497 @@ async function restartBackendFromUI() {
   }
 }
 
+function setAutomationStatus(message = '', tone = 'neutral') {
+  if (!automationStatus) return;
+  automationStatus.textContent = message;
+  automationStatus.dataset.tone = tone;
+}
+
+function setMemoryStatus(message = '', tone = 'neutral') {
+  if (!memoryStatus) return;
+  memoryStatus.textContent = message;
+  memoryStatus.dataset.tone = tone;
+}
+
+function setComposioPlaygroundStatus(message = '', tone = 'neutral') {
+  if (!composioPlaygroundStatus) return;
+  composioPlaygroundStatus.textContent = message;
+  composioPlaygroundStatus.dataset.tone = tone;
+}
+
+async function loadDashboardData() {
+  try {
+    const [integrationsResponse, automations, memories, activity] = await Promise.all([
+      window.electronAPI?.listComposioIntegrations?.() || { ok: true, data: [] },
+      window.electronAPI?.listAutomations?.() || [],
+      window.electronAPI?.listMemory?.() || [],
+      window.electronAPI?.listActivity?.() || []
+    ]);
+
+    integrationsCache = integrationsResponse?.ok ? integrationsResponse.data || [] : [];
+    automationsCache = automations || [];
+    memoryCache = memories || [];
+    activityCache = activity || [];
+
+    if (statIntegrations) statIntegrations.textContent = integrationsCache.length;
+    if (statAutomations) statAutomations.textContent = automationsCache.length;
+    if (statMemories) statMemories.textContent = memoryCache.length;
+    if (statActivity) statActivity.textContent = activityCache.length;
+
+    if (dashboardActivityList) {
+      dashboardActivityList.innerHTML = '';
+      activityCache.slice(0, 4).forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'activity-item';
+        div.innerHTML = `<strong>${item.title}</strong><br><small>${new Date(item.created_at).toLocaleString()}</small>`;
+        dashboardActivityList.appendChild(div);
+      });
+      if (activityCache.length === 0) {
+        dashboardActivityList.innerHTML = '<div class="empty-state">No activity yet.</div>';
+      }
+    }
+
+    if (dashboardMemoryPreview) {
+      dashboardMemoryPreview.innerHTML = '';
+      const pinned = memoryCache.filter(m => m.pinned);
+      if (pinned.length === 0) {
+        dashboardMemoryPreview.innerHTML = '<div class="empty-state">No pinned memories yet.</div>';
+      } else {
+        pinned.slice(0, 2).forEach(mem => {
+          const div = document.createElement('div');
+          div.className = 'memory-card';
+          div.innerHTML = `<strong>${mem.title}</strong><p>${mem.content}</p>`;
+          dashboardMemoryPreview.appendChild(div);
+        });
+      }
+    }
+  } catch (err) {
+    console.error('[DASHBOARD] Failed to load data:', err);
+  }
+}
+
+async function loadIntegrations(refresh = false) {
+  if (!window.electronAPI?.listComposioIntegrations || !integrationsGrid) return;
+  integrationsGrid.innerHTML = '';
+  try {
+    const response = await window.electronAPI.listComposioIntegrations(refresh);
+    if (!response?.ok) {
+      if (response?.status === 401) {
+        integrationsGrid.innerHTML = `
+          <div class="empty-state">
+            <strong>Connect Composio to load integrations.</strong>
+            <div class="empty-subtitle">Add your COMPOSIO_API_KEY in Settings.</div>
+            <button class="primary-btn" id="openSettingsFromIntegrations">Open Settings</button>
+          </div>
+        `;
+        const openSettingsBtn = document.getElementById('openSettingsFromIntegrations');
+        openSettingsBtn?.addEventListener('click', () => setActiveView('settings'));
+        return;
+      }
+      integrationsGrid.innerHTML = '<div class="empty-state">Failed to load integrations.</div>';
+      return;
+    }
+
+    integrationsCache = response.data || [];
+    integrationsCache.forEach(item => {
+      const card = document.createElement('div');
+      card.className = 'integration-card glass-panel';
+      card.innerHTML = `
+        <div class="integration-header">
+          <div>
+            <div class="integration-title">${item.name}</div>
+            <div class="integration-meta">${item.category}</div>
+            <div class="integration-meta">Live from Composio</div>
+          </div>
+          <div class="integration-icon">${item.icon || '✨'}</div>
+        </div>
+        <div class="integration-desc">${item.description || 'No description provided.'}</div>
+        <div class="integration-actions">
+          <span class="integration-meta">${item.connected ? 'Connected' : 'Not connected'}</span>
+          <button class="accent-btn">${item.connected ? 'Disconnect' : 'Connect'}</button>
+        </div>
+      `;
+      const button = card.querySelector('button');
+      button.addEventListener('click', async () => {
+        const updated = await window.electronAPI.updateIntegration(item.id, !item.connected);
+        if (updated?.connected) {
+          window.open('https://platform.composio.dev', '_blank');
+        }
+        loadIntegrations();
+        loadDashboardData();
+      });
+      integrationsGrid.appendChild(card);
+    });
+  } catch (err) {
+    console.error('[INTEGRATIONS] Failed:', err);
+    integrationsGrid.innerHTML = '<div class="empty-state">Failed to load integrations.</div>';
+  }
+}
+
+async function runComposioPlayground() {
+  if (!window.electronAPI?.runComposioTest) return;
+  const prompt = composioPlaygroundPrompt?.value?.trim() || '';
+  if (!prompt) {
+    setComposioPlaygroundStatus('Enter a prompt.', 'error');
+    return;
+  }
+
+  const externalUserId = composioPlaygroundUserId?.value?.trim() || null;
+  setComposioPlaygroundStatus('Running...', 'neutral');
+  if (composioPlaygroundOutput) composioPlaygroundOutput.textContent = '';
+
+  try {
+    const result = await window.electronAPI.runComposioTest(prompt, externalUserId);
+    if (!result?.ok) {
+      if (result?.status === 401) {
+        setComposioPlaygroundStatus('COMPOSIO_API_KEY missing. Add it in Settings.', 'error');
+        if (composioPlaygroundOutput) {
+          composioPlaygroundOutput.textContent = 'Missing COMPOSIO_API_KEY.';
+        }
+        return;
+      }
+      const error = result?.data?.error || 'Tool router failed.';
+      setComposioPlaygroundStatus(error, 'error');
+      if (composioPlaygroundOutput) composioPlaygroundOutput.textContent = String(error);
+      return;
+    }
+
+    const message = result?.data?.message || '';
+    if (composioPlaygroundOutput) composioPlaygroundOutput.textContent = message;
+    setComposioPlaygroundStatus('Completed.', 'success');
+  } catch (err) {
+    console.error('[COMPOSIO] Playground failed:', err);
+    setComposioPlaygroundStatus('Tool router failed.', 'error');
+  }
+}
+
+function closeAutomationHistory() {
+  if (!automationHistoryModal) return;
+  automationHistoryModal.classList.add('hidden');
+  if (automationRunsList) automationRunsList.innerHTML = '';
+  if (automationHistoryStatus) automationHistoryStatus.textContent = '';
+}
+
+async function openAutomationHistory(automation) {
+  if (!automationHistoryModal || !automationRunsList) return;
+  if (!window.electronAPI?.listAutomationRuns) return;
+
+  automationHistoryModal.classList.remove('hidden');
+  if (automationHistoryTitle) {
+    automationHistoryTitle.textContent = `Automation History: ${automation.name}`;
+  }
+  if (automationHistoryStatus) {
+    automationHistoryStatus.textContent = 'Loading…';
+    automationHistoryStatus.dataset.tone = 'neutral';
+  }
+  automationRunsList.innerHTML = '';
+
+  try {
+    const runs = await window.electronAPI.listAutomationRuns(automation.id, 50, 0);
+    if (!Array.isArray(runs) || runs.length === 0) {
+      automationRunsList.innerHTML = '<div class="empty-state">No runs yet.</div>';
+      if (automationHistoryStatus) automationHistoryStatus.textContent = '';
+      return;
+    }
+
+    if (automationHistoryStatus) automationHistoryStatus.textContent = '';
+
+    runs.forEach(run => {
+      const div = document.createElement('div');
+      div.className = 'run-item';
+      const createdAt = run.created_at ? new Date(run.created_at) : null;
+      const createdLabel = createdAt ? createdAt.toLocaleString() : 'Unknown time';
+      const status = run.status || 'unknown';
+      const output = String(run.output || '');
+      const preview = output.length > 180 ? `${output.slice(0, 180)}…` : output;
+
+      div.innerHTML = `
+        <div class="run-header">
+          <div>
+            <div><strong>${createdLabel}</strong></div>
+            <div class="run-meta">Status: <span class="status-chip ${status === 'success' ? 'connected' : 'disabled'}">${status}</span></div>
+          </div>
+          <div class="run-actions">
+            <button class="ghost-btn" data-action="activity">View in Activity</button>
+            <button class="ghost-btn" data-action="copy">Copy</button>
+            <button class="primary-btn" data-action="toggle">Details</button>
+          </div>
+        </div>
+        <div class="run-output hidden" data-role="output">${escapeHtml(preview)}</div>
+      `;
+
+      const outputEl = div.querySelector('[data-role="output"]');
+      const toggleBtn = div.querySelector('[data-action="toggle"]');
+      const copyBtn = div.querySelector('[data-action="copy"]');
+      const activityBtn = div.querySelector('[data-action="activity"]');
+
+      toggleBtn.addEventListener('click', () => {
+        const isHidden = outputEl.classList.toggle('hidden');
+        if (!isHidden) {
+          outputEl.textContent = output || '(no output)';
+          toggleBtn.textContent = 'Hide';
+        } else {
+          outputEl.textContent = preview;
+          toggleBtn.textContent = 'Details';
+        }
+      });
+
+      copyBtn.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(output || '');
+          copyBtn.textContent = 'Copied';
+          setTimeout(() => (copyBtn.textContent = 'Copy'), 1000);
+        } catch (_err) {
+          copyBtn.textContent = 'Copy failed';
+          setTimeout(() => (copyBtn.textContent = 'Copy'), 1200);
+        }
+      });
+
+      activityBtn.addEventListener('click', () => {
+        activityHighlightTs = run.created_at ? new Date(run.created_at).getTime() : null;
+        setActiveView('activity');
+      });
+
+      automationRunsList.appendChild(div);
+    });
+  } catch (err) {
+    console.error('[AUTOMATIONS] Failed to load runs:', err);
+    automationRunsList.innerHTML = '<div class="empty-state">Failed to load runs.</div>';
+    if (automationHistoryStatus) {
+      automationHistoryStatus.textContent = 'Failed to load runs.';
+      automationHistoryStatus.dataset.tone = 'error';
+    }
+  }
+}
+
+async function loadAutomations() {
+  if (!window.electronAPI?.listAutomations || !automationsList) return;
+  automationsList.innerHTML = '';
+  try {
+    const automations = await window.electronAPI.listAutomations();
+    automationsCache = automations || [];
+    if (automationsCache.length === 0) {
+      automationsList.innerHTML = '<div class="empty-state">No automations yet.</div>';
+      return;
+    }
+    automationsCache.forEach(item => {
+      const card = document.createElement('div');
+      card.className = 'automation-card';
+      card.innerHTML = `
+        <h4>${item.name}</h4>
+        <small>${item.schedule} · ${item.provider}</small>
+        <p>${item.prompt}</p>
+        <div class="automation-actions">
+          <button class="ghost-btn" data-action="toggle">${item.enabled ? 'Disable' : 'Enable'}</button>
+          <button class="ghost-btn" data-action="history">History</button>
+          <button class="primary-btn" data-action="run">Run Now</button>
+        </div>
+      `;
+      const toggleBtn = card.querySelector('[data-action="toggle"]');
+      const historyBtn = card.querySelector('[data-action="history"]');
+      const runBtn = card.querySelector('[data-action="run"]');
+      toggleBtn.addEventListener('click', async () => {
+        const updated = await window.electronAPI.updateAutomation(item.id, {
+          name: item.name,
+          prompt: item.prompt,
+          schedule: item.schedule,
+          provider: item.provider,
+          model: item.model,
+          enabled: !item.enabled
+        });
+        if (updated?.id) {
+          loadAutomations();
+          loadDashboardData();
+        }
+      });
+      historyBtn.addEventListener('click', async () => {
+        await openAutomationHistory(item);
+      });
+      runBtn.addEventListener('click', async () => {
+        setAutomationStatus('Running automation...', 'neutral');
+        const result = await window.electronAPI.runAutomation(item.id);
+        if (result?.success) {
+          setAutomationStatus('Automation completed.', 'success');
+        } else {
+          setAutomationStatus(result?.error || 'Automation failed.', 'error');
+        }
+        loadActivity();
+      });
+      automationsList.appendChild(card);
+    });
+  } catch (err) {
+    console.error('[AUTOMATIONS] Failed:', err);
+    automationsList.innerHTML = '<div class="empty-state">Failed to load automations.</div>';
+  }
+}
+
+async function handleCreateAutomation() {
+  if (!automationName || !automationPrompt || !automationSchedule) return;
+  const payload = {
+    name: automationName.value.trim(),
+    prompt: automationPrompt.value.trim(),
+    schedule: automationSchedule.value.trim(),
+    provider: automationProvider?.value || 'claude',
+    model: automationModel?.value?.trim() || null,
+    enabled: automationEnabled?.checked || false
+  };
+  if (!payload.name || !payload.prompt || !payload.schedule) {
+    setAutomationStatus('Please fill name, prompt, and schedule.', 'error');
+    return;
+  }
+  setAutomationStatus('Creating automation...', 'neutral');
+  const created = await window.electronAPI.createAutomation(payload);
+  if (created?.id) {
+    setAutomationStatus('Automation created.', 'success');
+    clearAutomationForm();
+    loadAutomations();
+    loadDashboardData();
+  } else {
+    setAutomationStatus('Failed to create automation.', 'error');
+  }
+}
+
+function clearAutomationForm() {
+  if (automationName) automationName.value = '';
+  if (automationPrompt) automationPrompt.value = '';
+  if (automationSchedule) automationSchedule.value = '';
+  if (automationModel) automationModel.value = '';
+  if (automationEnabled) automationEnabled.checked = true;
+}
+
+async function loadMemory(force = false) {
+  if (!window.electronAPI?.listMemory || !memoryList) return;
+  memoryList.innerHTML = '';
+  try {
+    const searchValue = force ? memorySearch?.value?.trim() || '' : '';
+    const memories = await window.electronAPI.listMemory(searchValue);
+    memoryCache = memories || [];
+    if (memoryCache.length === 0) {
+      memoryList.innerHTML = '<div class="empty-state">No memories yet.</div>';
+      return;
+    }
+    memoryCache.forEach(mem => {
+      let tags = [];
+      try {
+        tags = JSON.parse(mem.tags || '[]');
+      } catch (err) {
+        tags = [];
+      }
+      const card = document.createElement('div');
+      card.className = 'memory-card';
+      card.innerHTML = `
+        <strong>${mem.title}</strong>
+        <p>${mem.content}</p>
+        <div class="memory-tags">${tags.map(t => `<span class="memory-tag">${t}</span>`).join('')}</div>
+        <div class="automation-actions">
+          <button class="ghost-btn" data-action="pin">${mem.pinned ? 'Unpin' : 'Pin to chat'}</button>
+          <button class="primary-btn" data-action="delete">Delete</button>
+        </div>
+      `;
+      const pinBtn = card.querySelector('[data-action="pin"]');
+      const deleteBtn = card.querySelector('[data-action="delete"]');
+      pinBtn.addEventListener('click', async () => {
+        await window.electronAPI.updateMemory(mem.id, {
+          title: mem.title,
+          content: mem.content,
+          tags,
+          pinned: !mem.pinned
+        });
+        if (!mem.pinned) {
+          setActiveView('chat');
+          showChatWorkspace();
+          const targetInput = isFirstMessage ? homeInput : messageInput;
+          targetInput.value = `Memory: ${mem.title}\n${mem.content}`;
+          targetInput.focus();
+        }
+        loadMemory();
+        loadDashboardData();
+      });
+      deleteBtn.addEventListener('click', async () => {
+        await window.electronAPI.deleteMemory(mem.id);
+        loadMemory();
+        loadDashboardData();
+      });
+      memoryList.appendChild(card);
+    });
+  } catch (err) {
+    console.error('[MEMORY] Failed:', err);
+    memoryList.innerHTML = '<div class="empty-state">Failed to load memory.</div>';
+  }
+}
+
+async function handleCreateMemory() {
+  if (!memoryTitle || !memoryContent) return;
+  const payload = {
+    title: memoryTitle.value.trim(),
+    content: memoryContent.value.trim(),
+    tags: memoryTags?.value?.split(',').map(t => t.trim()).filter(Boolean) || [],
+    pinned: memoryPinned?.checked || false
+  };
+  if (!payload.title || !payload.content) {
+    setMemoryStatus('Please fill title and details.', 'error');
+    return;
+  }
+  setMemoryStatus('Saving memory...', 'neutral');
+  const created = await window.electronAPI.createMemory(payload);
+  if (created?.id) {
+    setMemoryStatus('Memory saved.', 'success');
+    clearMemoryForm();
+    loadMemory();
+    loadDashboardData();
+  } else {
+    setMemoryStatus('Failed to save memory.', 'error');
+  }
+}
+
+function clearMemoryForm() {
+  if (memoryTitle) memoryTitle.value = '';
+  if (memoryContent) memoryContent.value = '';
+  if (memoryTags) memoryTags.value = '';
+  if (memoryPinned) memoryPinned.checked = false;
+}
+
+async function loadActivity(force = false) {
+  if (!window.electronAPI?.listActivity || !activityFeed) return;
+  try {
+    const activity = await window.electronAPI.listActivity();
+    activityCache = activity || [];
+    activityFeed.innerHTML = '';
+    activityCache.forEach(item => {
+      const div = document.createElement('div');
+      div.className = 'activity-item';
+      div.dataset.ts = String(new Date(item.created_at).getTime());
+      div.innerHTML = `<strong>${item.title}</strong><br><small>${new Date(item.created_at).toLocaleString()}</small><div>${item.detail || ''}</div>`;
+      activityFeed.appendChild(div);
+    });
+    if (activityCache.length === 0) {
+      activityFeed.innerHTML = '<div class="empty-state">No activity yet.</div>';
+    }
+    if (force) {
+      if (activityInterval) clearInterval(activityInterval);
+      activityInterval = setInterval(() => {
+        if (currentView === 'activity') {
+          loadActivity(false);
+        }
+      }, 15000);
+    }
+
+    if (activityHighlightTs) {
+      const items = Array.from(activityFeed.querySelectorAll('.activity-item'));
+      const target = items.find(el => Number(el.dataset.ts) >= activityHighlightTs) || items[0];
+      if (target) {
+        target.classList.add('highlight');
+        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        setTimeout(() => target.classList.remove('highlight'), 2500);
+      }
+      activityHighlightTs = null;
+    }
+  } catch (err) {
+    console.error('[ACTIVITY] Failed:', err);
+    activityFeed.innerHTML = '<div class="empty-state">Failed to load activity.</div>';
+  }
+}
+
 function openSettings() {
   if (!settingsModal) return;
   settingsModal.classList.remove('hidden');
@@ -521,6 +1671,1118 @@ function openSettings() {
 function closeSettings() {
   if (!settingsModal) return;
   settingsModal.classList.add('hidden');
+}
+
+function setupSettingsControlListeners() {
+  if (settingDefaultDestination) {
+    settingDefaultDestination.addEventListener('change', async () => {
+      defaultDestination = settingDefaultDestination.value;
+      await persistSettings('general', { defaultDestination });
+    });
+  }
+
+  setupSegmentedControl(settingThreadDetail, async (value) => {
+    threadDetailLevel = value;
+    applyThreadDetail(threadDetailLevel);
+    await persistSettings('general', { threadDetail: value });
+  });
+
+  if (settingPreventSleep) {
+    settingPreventSleep.addEventListener('change', async () => {
+      const enabled = settingPreventSleep.checked;
+      await persistSettings('general', { preventSleep: enabled });
+      try {
+        await window.electronAPI?.togglePowerSaveBlocker?.(enabled);
+      } catch (err) {
+        console.error('[SETTINGS] Power save toggle failed:', err);
+      }
+    });
+  }
+
+  if (settingCmdEnter) {
+    settingCmdEnter.addEventListener('change', async () => {
+      requireCmdEnter = settingCmdEnter.checked;
+      await persistSettings('general', { requireCmdEnter });
+    });
+  }
+
+  setupSegmentedControl(settingFollowUp, async (value) => {
+    followUpBehavior = value;
+    await persistSettings('general', { followUp: value });
+  });
+
+  setupSegmentedControl(settingTheme, async (value) => {
+    applyThemeSetting(value);
+    await persistSettings('appearance', { theme: value });
+  });
+
+  if (settingOpaque) {
+    settingOpaque.addEventListener('change', async () => {
+      const enabled = settingOpaque.checked;
+      document.body.classList.toggle('opaque-bg', enabled);
+      await persistSettings('appearance', { opaque: enabled });
+    });
+  }
+
+  if (settingPointerCursor) {
+    settingPointerCursor.addEventListener('change', async () => {
+      const enabled = settingPointerCursor.checked;
+      document.body.classList.toggle('pointer-cursor', enabled);
+      await persistSettings('appearance', { pointerCursor: enabled });
+    });
+  }
+
+  if (settingSansSize) {
+    settingSansSize.addEventListener('change', async () => {
+      const size = Number(settingSansSize.value) || 14;
+      document.documentElement.style.setProperty('--font-sans-size', `${size}px`);
+      await persistSettings('appearance', { sansSize: size });
+    });
+  }
+
+  if (settingCodeSize) {
+    settingCodeSize.addEventListener('change', async () => {
+      const size = Number(settingCodeSize.value) || 13;
+      document.documentElement.style.setProperty('--font-code-size', `${size}px`);
+      await persistSettings('appearance', { codeSize: size });
+    });
+  }
+
+  if (settingApprovalPolicy) {
+    settingApprovalPolicy.addEventListener('change', async () => {
+      await persistSettings('configuration', { approvalPolicy: settingApprovalPolicy.value });
+    });
+  }
+
+  if (settingSandboxMode) {
+    settingSandboxMode.addEventListener('change', async () => {
+      await persistSettings('configuration', { sandboxMode: settingSandboxMode.value });
+    });
+  }
+
+  if (settingWorkspaceName) {
+    settingWorkspaceName.addEventListener('change', async () => {
+      await persistSettings('personalization', { workspaceName: settingWorkspaceName.value.trim() });
+      applyPersonalization();
+    });
+  }
+
+  if (settingTagline) {
+    settingTagline.addEventListener('change', async () => {
+      await persistSettings('personalization', { tagline: settingTagline.value.trim() });
+      applyPersonalization();
+    });
+  }
+
+  if (settingGreeting) {
+    settingGreeting.addEventListener('change', async () => {
+      await persistSettings('personalization', { greeting: settingGreeting.value.trim() });
+      applyPersonalization();
+    });
+  }
+
+  if (settingDefaultProvider) {
+    settingDefaultProvider.addEventListener('change', async () => {
+      const value = settingDefaultProvider.value;
+      await persistSettings('personalization', { defaultProvider: value });
+      applyPersonalization();
+    });
+  }
+
+  if (settingDefaultModel) {
+    settingDefaultModel.addEventListener('change', async () => {
+      await persistSettings('personalization', { defaultModel: settingDefaultModel.value.trim() });
+      applyPersonalization();
+    });
+  }
+}
+
+function setupSegmentedControl(container, onChange) {
+  if (!container) return;
+  const buttons = container.querySelectorAll('button');
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      setSegmentedValue(container, btn.dataset.value);
+      if (onChange) onChange(btn.dataset.value);
+    });
+  });
+}
+
+function setSegmentedValue(container, value) {
+  if (!container) return;
+  container.dataset.value = value;
+  container.querySelectorAll('button').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.value === value);
+  });
+}
+
+function selectSettingsSection(section) {
+  if (!section) return;
+  settingsNavItems.forEach(item => {
+    item.classList.toggle('active', item.dataset.section === section);
+  });
+  settingsSections.forEach(panel => {
+    panel.classList.toggle('hidden', panel.dataset.section !== section);
+  });
+
+  if (section === 'archived') {
+    loadArchivedThreadsList();
+  }
+}
+
+async function initializeSettings() {
+  await loadSettingsSections();
+  await syncArchivedFromDb();
+}
+
+async function loadSettingsSections() {
+  if (!window.electronAPI?.getSettingsSection) return;
+  const defaults = {
+    general: {
+      defaultDestination: 'dashboard',
+      threadDetail: 'full',
+      preventSleep: false,
+      requireCmdEnter: false,
+      followUp: 'queue'
+    },
+    appearance: {
+      theme: 'dark',
+      opaque: false,
+      pointerCursor: false,
+      sansSize: 14,
+      codeSize: 13
+    },
+    configuration: {
+      approvalPolicy: 'default',
+      sandboxMode: 'default'
+    },
+    personalization: {
+      workspaceName: 'WZRD.tech',
+      tagline: 'Liquid-glass AI workspace',
+      greeting: 'Ask me anything',
+      defaultProvider: 'claude',
+      defaultModel: 'claude-sonnet-4-5-20250514'
+    }
+  };
+
+  try {
+    const [general, appearance, configuration, personalization] = await Promise.all([
+      window.electronAPI.getSettingsSection('general'),
+      window.electronAPI.getSettingsSection('appearance'),
+      window.electronAPI.getSettingsSection('configuration'),
+      window.electronAPI.getSettingsSection('personalization')
+    ]);
+
+    settingsCache.general = { ...defaults.general, ...general };
+    settingsCache.appearance = { ...defaults.appearance, ...appearance };
+    settingsCache.configuration = { ...defaults.configuration, ...configuration };
+    settingsCache.personalization = { ...defaults.personalization, ...personalization };
+
+    applyGeneralSettings(settingsCache.general);
+    applyAppearanceSettings(settingsCache.appearance);
+    applyConfigurationSettings(settingsCache.configuration);
+    applyPersonalizationSettings(settingsCache.personalization);
+  } catch (err) {
+    console.error('[SETTINGS] Failed to load settings sections:', err);
+  }
+}
+
+function applyGeneralSettings(settings) {
+  defaultDestination = settings.defaultDestination || 'dashboard';
+  threadDetailLevel = settings.threadDetail || 'full';
+  followUpBehavior = settings.followUp || 'queue';
+  requireCmdEnter = !!settings.requireCmdEnter;
+
+  if (settingDefaultDestination) settingDefaultDestination.value = defaultDestination;
+  setSegmentedValue(settingThreadDetail, threadDetailLevel);
+  if (settingPreventSleep) settingPreventSleep.checked = !!settings.preventSleep;
+  if (settingCmdEnter) settingCmdEnter.checked = requireCmdEnter;
+  setSegmentedValue(settingFollowUp, followUpBehavior);
+
+  applyThreadDetail(threadDetailLevel);
+  if (settings.preventSleep) {
+    window.electronAPI?.togglePowerSaveBlocker?.(true).catch(() => {});
+  }
+}
+
+function applyAppearanceSettings(settings) {
+  if (settingOpaque) settingOpaque.checked = !!settings.opaque;
+  if (settingPointerCursor) settingPointerCursor.checked = !!settings.pointerCursor;
+  if (settingSansSize) settingSansSize.value = settings.sansSize || 14;
+  if (settingCodeSize) settingCodeSize.value = settings.codeSize || 13;
+
+  applyThemeSetting(settings.theme || 'dark');
+  document.body.classList.toggle('opaque-bg', !!settings.opaque);
+  document.body.classList.toggle('pointer-cursor', !!settings.pointerCursor);
+  document.documentElement.style.setProperty('--font-sans-size', `${settings.sansSize || 14}px`);
+  document.documentElement.style.setProperty('--font-code-size', `${settings.codeSize || 13}px`);
+}
+
+function applyConfigurationSettings(settings) {
+  if (settingApprovalPolicy) settingApprovalPolicy.value = settings.approvalPolicy || 'default';
+  if (settingSandboxMode) settingSandboxMode.value = settings.sandboxMode || 'default';
+}
+
+function applyPersonalizationSettings(settings) {
+  if (settingWorkspaceName) settingWorkspaceName.value = settings.workspaceName || '';
+  if (settingTagline) settingTagline.value = settings.tagline || '';
+  if (settingGreeting) settingGreeting.value = settings.greeting || '';
+  if (settingDefaultProvider) settingDefaultProvider.value = settings.defaultProvider || 'claude';
+  if (settingDefaultModel) settingDefaultModel.value = settings.defaultModel || '';
+  applyPersonalization();
+}
+
+function applyPersonalization() {
+  const settings = settingsCache.personalization || {};
+  const workspaceName = settings.workspaceName || 'WZRD.tech';
+  const tagline = settings.tagline || 'Liquid-glass AI workspace';
+  const greeting = settings.greeting || 'Ask me anything';
+
+  if (heroSubtag) heroSubtag.textContent = tagline;
+  if (homeInput) homeInput.placeholder = greeting;
+  if (introWordmark) introWordmark.textContent = workspaceName;
+  wordmarkFallbacks.forEach(el => {
+    el.textContent = workspaceName;
+  });
+
+  const provider = settings.defaultProvider || 'claude';
+  if (provider && providerModels[provider]) {
+    selectedProvider = provider;
+    updateProviderUI(provider);
+  }
+
+  const modelValue = settings.defaultModel;
+  if (modelValue) {
+    const models = providerModels[selectedProvider] || [];
+    const modelInfo = models.find(m => m.value === modelValue);
+    if (modelInfo) {
+      selectedModel = modelInfo.value;
+      document.querySelectorAll('.model-selector .model-label').forEach(l => {
+        l.textContent = modelInfo.label;
+      });
+      document.querySelectorAll('.model-menu .dropdown-item').forEach(item => {
+        const isSelected = item.dataset.value === modelValue;
+        item.classList.toggle('selected', isSelected);
+        const checkIcon = item.querySelector('.check-icon');
+        if (checkIcon) {
+          checkIcon.style.display = isSelected ? 'block' : 'none';
+        }
+      });
+      localStorage.setItem('selectedModel', selectedModel);
+    }
+  }
+}
+
+function applyThreadDetail(level) {
+  document.body.classList.remove('detail-compact', 'detail-minimal');
+  if (level === 'compact') {
+    document.body.classList.add('detail-compact');
+  } else if (level === 'minimal') {
+    document.body.classList.add('detail-minimal');
+  }
+}
+
+function applyThemeSetting(theme) {
+  if (!systemThemeMedia) {
+    systemThemeMedia = window.matchMedia('(prefers-color-scheme: dark)');
+    systemThemeMedia.addEventListener('change', () => {
+      if (settingsCache.appearance?.theme === 'system') {
+        applyThemeSetting('system');
+      }
+    });
+  }
+
+  document.body.classList.remove('theme-light');
+
+  if (theme === 'light') {
+    document.body.classList.add('theme-light');
+  } else if (theme === 'system') {
+    const prefersDark = systemThemeMedia.matches;
+    if (!prefersDark) {
+      document.body.classList.add('theme-light');
+    }
+  }
+
+  if (settingTheme) {
+    setSegmentedValue(settingTheme, theme);
+  }
+}
+
+async function persistSettings(section, updates) {
+  settingsCache[section] = { ...(settingsCache[section] || {}), ...(updates || {}) };
+  try {
+    const saved = await window.electronAPI?.updateSettingsSection?.(section, updates);
+    if (saved) {
+      settingsCache[section] = { ...(settingsCache[section] || {}), ...saved };
+    }
+  } catch (err) {
+    console.error('[SETTINGS] Failed to persist settings:', err);
+  }
+}
+
+async function syncArchivedFromDb() {
+  if (!window.electronAPI?.listArchivedThreads) return;
+  try {
+    const archived = await window.electronAPI.listArchivedThreads();
+    const archivedIds = new Set((archived || []).map(item => item.id));
+    let updated = false;
+    allChats.forEach(chat => {
+      const shouldArchive = archivedIds.has(chat.id);
+      if (!!chat.archived !== shouldArchive) {
+        chat.archived = shouldArchive;
+        updated = true;
+      }
+    });
+    if (updated) {
+      localStorage.setItem('allChats', JSON.stringify(allChats));
+      renderChatHistory();
+    }
+  } catch (err) {
+    console.error('[ARCHIVE] Failed to sync archived threads:', err);
+  }
+}
+
+async function handleOpenConfigFile() {
+  try {
+    await window.electronAPI?.openConfigFile?.();
+  } catch (err) {
+    console.error('[SETTINGS] Failed to open config:', err);
+  }
+}
+
+async function openLicenseModal() {
+  if (!licenseModal) return;
+  licenseModal.classList.remove('hidden');
+  if (licenseContent) {
+    licenseContent.textContent = 'Loading...';
+  }
+  try {
+    const text = await window.electronAPI?.getLicenseText?.();
+    if (licenseContent) {
+      licenseContent.textContent = text || 'No license text found.';
+    }
+  } catch (err) {
+    if (licenseContent) {
+      licenseContent.textContent = 'Failed to load license.';
+    }
+  }
+}
+
+function closeLicenseModal() {
+  if (!licenseModal) return;
+  licenseModal.classList.add('hidden');
+}
+
+function toggleSkillsAddPanel(show) {
+  if (!skillsAddPanel) return;
+  skillsAddPanel.classList.toggle('hidden', !show);
+  if (show) {
+    skillNameInput?.focus();
+  } else {
+    if (skillNameInput) skillNameInput.value = '';
+    if (skillUrlInput) skillUrlInput.value = '';
+    setSkillStatus('');
+  }
+}
+
+async function loadSkills() {
+  if (!skillsList || !window.electronAPI?.listSkills) return;
+  try {
+    skillsCache = await window.electronAPI.listSkills();
+  } catch (err) {
+    console.error('[SKILLS] Failed to load skills:', err);
+    skillsCache = [];
+  }
+  renderSkills();
+}
+
+function renderSkills() {
+  if (!skillsList) return;
+  const query = skillsSearch?.value?.trim().toLowerCase() || '';
+  const items = (skillsCache || []).filter(item => {
+    if (!query) return true;
+    const haystack = `${item.name} ${item.description || ''} ${item.source || ''} ${item.url || ''}`.toLowerCase();
+    return haystack.includes(query);
+  });
+
+  const installed = items.filter(item => item.installed);
+  const recommended = items.filter(item => !item.installed);
+
+  skillsList.innerHTML = '';
+  if (items.length === 0) {
+    skillsList.innerHTML = '<div class="empty-state">No skills found.</div>';
+    return;
+  }
+
+  skillsList.appendChild(buildSkillsSection('Installed', installed));
+  skillsList.appendChild(buildSkillsSection('Recommended', recommended));
+}
+
+function buildSkillsSection(title, items) {
+  const section = document.createElement('div');
+  section.className = 'skills-section';
+  section.innerHTML = `<div class="skills-section-title">${title}</div>`;
+
+  if (items.length === 0) {
+    const empty = document.createElement('div');
+    empty.className = 'empty-state';
+    empty.textContent = 'No skills here yet.';
+    section.appendChild(empty);
+    return section;
+  }
+
+  items.forEach(skill => {
+    const row = document.createElement('div');
+    row.className = 'skill-row';
+    row.innerHTML = `
+      <div class="skill-info">
+        <div class="skill-icon" style="background: ${getSkillGradient(skill.name)}">${getSkillInitials(skill.name)}</div>
+        <div class="skill-text">
+          <div class="skill-title">${skill.name}</div>
+          <div class="skill-desc">${skill.description || 'No description yet.'}</div>
+        </div>
+      </div>
+      <div class="skill-actions">
+        <span class="skill-chip">${skill.installed ? 'Installed' : 'Not installed'}</span>
+        <button class="${skill.installed ? 'ghost-btn' : 'primary-btn'}" data-action="toggle">
+          ${skill.installed ? 'Uninstall' : 'Install'}
+        </button>
+        ${skill.source === 'github' ? '<button class="ghost-btn" data-action="remove">Remove</button>' : ''}
+      </div>
+    `;
+
+    row.querySelector('[data-action="toggle"]').addEventListener('click', async () => {
+      await window.electronAPI.updateSkill(skill.id, {
+        installed: skill.installed ? 0 : 1
+      });
+      loadSkills();
+    });
+
+    const removeBtn = row.querySelector('[data-action="remove"]');
+    if (removeBtn) {
+      removeBtn.addEventListener('click', async () => {
+        await window.electronAPI.deleteSkill(skill.id);
+        loadSkills();
+      });
+    }
+
+    section.appendChild(row);
+  });
+
+  return section;
+}
+
+function getSkillInitials(name = '') {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return 'SK';
+  const letters = parts.slice(0, 2).map(part => part[0].toUpperCase());
+  return letters.join('');
+}
+
+function getSkillGradient(name = '') {
+  const gradients = [
+    ['#6be7ff', '#8c7bff'],
+    ['#7cf0c8', '#5f7dff'],
+    ['#ffb36b', '#8c7bff'],
+    ['#6be7ff', '#ffb36b']
+  ];
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = (hash + name.charCodeAt(i)) % gradients.length;
+  }
+  const [start, end] = gradients[hash];
+  return `linear-gradient(135deg, ${start}, ${end})`;
+}
+
+async function handleAddSkill() {
+  if (!skillNameInput || !skillUrlInput) return;
+  const name = skillNameInput.value.trim();
+  const url = skillUrlInput.value.trim();
+  if (!name || !url) {
+    setSkillStatus('Please provide a name and GitHub URL.', 'error');
+    return;
+  }
+  setSkillStatus('Saving skill...', 'neutral');
+  try {
+    const created = await window.electronAPI.createSkill({
+      name,
+      url,
+      description: 'Custom skill added via GitHub.',
+      source: 'github',
+      installed: 0
+    });
+    if (created?.id) {
+      setSkillStatus('Skill added.', 'success');
+      toggleSkillsAddPanel(false);
+      loadSkills();
+    } else {
+      setSkillStatus('Failed to add skill.', 'error');
+    }
+  } catch (err) {
+    console.error('[SKILLS] Failed to add skill:', err);
+    setSkillStatus('Failed to add skill.', 'error');
+  }
+}
+
+function setClawdStatusMessage(message = '', tone = 'neutral') {
+  if (!clawdStatusMessage) return;
+  clawdStatusMessage.textContent = message;
+  clawdStatusMessage.dataset.tone = tone;
+}
+
+function setClawdConfigStatus(message = '', tone = 'neutral') {
+  if (!clawdConfigStatus) return;
+  clawdConfigStatus.textContent = message;
+  clawdConfigStatus.dataset.tone = tone;
+}
+
+function normalizeListInput(value) {
+  const raw = String(value || '');
+  return raw
+    .split(',')
+    .map(v => v.trim())
+    .filter(Boolean);
+}
+
+function joinList(value) {
+  const arr = Array.isArray(value) ? value : [];
+  return arr.join(', ');
+}
+
+function readClawdConfigFromForm() {
+  const next = { ...(clawdConfigCache || {}) };
+  next.agentId = next.agentId || 'clawd';
+
+  next.whatsapp = {
+    ...(next.whatsapp || {}),
+    enabled: !!clawdWhatsappEnabled?.checked,
+    allowedDMs: normalizeListInput(clawdWhatsappAllowedDMs?.value || '*') || ['*'],
+    allowedGroups: normalizeListInput(clawdWhatsappAllowedGroups?.value || ''),
+    respondToMentionsOnly: !!clawdWhatsappMentionsOnly?.checked
+  };
+
+  next.telegram = {
+    ...(next.telegram || {}),
+    enabled: !!clawdTelegramEnabled?.checked,
+    token: String(clawdTelegramToken?.value || '').trim(),
+    allowedDMs: next.telegram?.allowedDMs || ['*'],
+    allowedGroups: next.telegram?.allowedGroups || [],
+    respondToMentionsOnly: next.telegram?.respondToMentionsOnly ?? true
+  };
+
+  next.signal = {
+    ...(next.signal || {}),
+    enabled: !!clawdSignalEnabled?.checked,
+    phoneNumber: String(clawdSignalPhone?.value || '').trim(),
+    signalCliPath: String(clawdSignalCliPath?.value || 'signal-cli').trim(),
+    allowedDMs: next.signal?.allowedDMs || ['*'],
+    allowedGroups: next.signal?.allowedGroups || [],
+    respondToMentionsOnly: next.signal?.respondToMentionsOnly ?? true
+  };
+
+  next.imessage = {
+    ...(next.imessage || {}),
+    enabled: !!clawdImessageEnabled?.checked,
+    allowedDMs: next.imessage?.allowedDMs || ['*'],
+    allowedGroups: next.imessage?.allowedGroups || [],
+    respondToMentionsOnly: next.imessage?.respondToMentionsOnly ?? true
+  };
+
+  next.agent = next.agent || { workspace: '~/clawd', maxTurns: 50, allowedTools: ['Read', 'Write', 'Edit', 'Bash', 'Glob', 'Grep'] };
+  next.browser = {
+    ...(next.browser || {}),
+    enabled: !!clawdBrowserEnabled?.checked,
+    mode: String(clawdBrowserMode?.value || 'clawd'),
+    clawd: next.browser?.clawd || { userDataDir: '~/.clawd-browser-profile', headless: false },
+    chrome: {
+      ...(next.browser?.chrome || {}),
+      cdpPort: Number(clawdBrowserCdpPort?.value) || 9222,
+      profilePath: next.browser?.chrome?.profilePath || ''
+    }
+  };
+
+  return next;
+}
+
+function populateClawdForm(config) {
+  clawdConfigCache = config || null;
+  if (!config) return;
+
+  if (clawdWhatsappEnabled) clawdWhatsappEnabled.checked = !!config.whatsapp?.enabled;
+  if (clawdWhatsappAllowedDMs) clawdWhatsappAllowedDMs.value = joinList(config.whatsapp?.allowedDMs || ['*']);
+  if (clawdWhatsappAllowedGroups) clawdWhatsappAllowedGroups.value = joinList(config.whatsapp?.allowedGroups || []);
+  if (clawdWhatsappMentionsOnly) clawdWhatsappMentionsOnly.checked = !!config.whatsapp?.respondToMentionsOnly;
+
+  if (clawdTelegramEnabled) clawdTelegramEnabled.checked = !!config.telegram?.enabled;
+  if (clawdTelegramToken) clawdTelegramToken.value = config.telegram?.token || '';
+
+  if (clawdSignalEnabled) clawdSignalEnabled.checked = !!config.signal?.enabled;
+  if (clawdSignalPhone) clawdSignalPhone.value = config.signal?.phoneNumber || '';
+  if (clawdSignalCliPath) clawdSignalCliPath.value = config.signal?.signalCliPath || 'signal-cli';
+
+  if (clawdImessageEnabled) clawdImessageEnabled.checked = !!config.imessage?.enabled;
+
+  if (clawdBrowserEnabled) clawdBrowserEnabled.checked = !!config.browser?.enabled;
+  if (clawdBrowserMode) clawdBrowserMode.value = config.browser?.mode || 'clawd';
+  if (clawdBrowserCdpPort) clawdBrowserCdpPort.value = config.browser?.chrome?.cdpPort ?? 9222;
+}
+
+function stopClawdPolling() {
+  if (clawdLogInterval) {
+    clearInterval(clawdLogInterval);
+    clawdLogInterval = null;
+  }
+}
+
+async function pollClawdLogs() {
+  if (!window.electronAPI?.getClawdLogs || !clawdLogs) return;
+  try {
+    const result = await window.electronAPI.getClawdLogs(clawdLogsCursor);
+    if (!result || result.error) {
+      return;
+    }
+    clawdLogsCursor = result.cursor || clawdLogsCursor;
+    const logs = Array.isArray(result.logs) ? result.logs : [];
+    if (logs.length === 0) return;
+
+    const lines = logs.map(entry => {
+      const time = entry.ts ? new Date(entry.ts).toLocaleTimeString() : '';
+      const level = entry.level ? entry.level.toUpperCase() : 'LOG';
+      return `[${time}] ${level} ${entry.message}`;
+    });
+
+    const next = (clawdLogs.textContent || '') + (clawdLogs.textContent ? '\n' : '') + lines.join('\n');
+    clawdLogs.textContent = next.length > 150000 ? next.slice(-150000) : next;
+    clawdLogs.scrollTop = clawdLogs.scrollHeight;
+  } catch (_err) {
+    // ignore polling errors
+  }
+}
+
+function startClawdPolling() {
+  stopClawdPolling();
+  pollClawdLogs();
+  clawdLogInterval = setInterval(() => {
+    if (currentView === 'clawd') {
+      pollClawdLogs();
+    }
+  }, 1000);
+}
+
+async function refreshClawdStatus() {
+  if (!window.electronAPI?.getClawdStatus) return;
+  try {
+    const status = await window.electronAPI.getClawdStatus();
+    if (status?.error) {
+      setClawdStatusMessage(status.error, 'error');
+      return;
+    }
+    const isRunning = !!status?.running;
+    if (clawdStatusChip) {
+      clawdStatusChip.textContent = isRunning ? 'Running' : 'Stopped';
+      clawdStatusChip.classList.toggle('running', isRunning);
+      clawdStatusChip.classList.toggle('stopped', !isRunning);
+    }
+    if (clawdStatusMeta) {
+      clawdStatusMeta.textContent = isRunning && status.startedAt
+        ? `Started ${new Date(status.startedAt).toLocaleString()}`
+        : 'Not running';
+    }
+    if (clawdStartBtn) clawdStartBtn.disabled = isRunning;
+    if (clawdStopBtn) clawdStopBtn.disabled = !isRunning;
+    if (clawdRestartBtn) clawdRestartBtn.disabled = !isRunning;
+
+    if (isRunning) {
+      startClawdPolling();
+    } else {
+      stopClawdPolling();
+    }
+  } catch (err) {
+    console.error('[OpenClawd] Failed to load status:', err);
+    setClawdStatusMessage('Failed to load status.', 'error');
+  }
+}
+
+async function refreshClawdConfig() {
+  if (!window.electronAPI?.getClawdConfig) return;
+  try {
+    const config = await window.electronAPI.getClawdConfig();
+    if (config?.error) {
+      setClawdConfigStatus(config.error, 'error');
+      return;
+    }
+    populateClawdForm(config);
+    setClawdConfigStatus('Loaded.', 'success');
+    setTimeout(() => setClawdConfigStatus(''), 800);
+  } catch (err) {
+    console.error('[OpenClawd] Failed to load config:', err);
+    setClawdConfigStatus('Failed to load config.', 'error');
+  }
+}
+
+async function loadClawdUi() {
+  await Promise.all([refreshClawdStatus(), refreshClawdConfig()]);
+}
+
+async function handleClawdSaveConfig() {
+  if (!window.electronAPI?.updateClawdConfig) return;
+  try {
+    setClawdConfigStatus('Saving…', 'neutral');
+    const next = readClawdConfigFromForm();
+    const saved = await window.electronAPI.updateClawdConfig(next);
+    if (saved?.error) {
+      setClawdConfigStatus(saved.error, 'error');
+      return;
+    }
+    populateClawdForm(saved);
+    setClawdConfigStatus('Saved. Restart to apply.', 'success');
+  } catch (err) {
+    console.error('[OpenClawd] Failed to save config:', err);
+    setClawdConfigStatus('Save failed.', 'error');
+  }
+}
+
+async function handleClawdStart() {
+  if (!window.electronAPI?.startClawd) return;
+  setClawdStatusMessage('Starting…', 'neutral');
+  if (clawdLogs) clawdLogs.textContent = '';
+  clawdLogsCursor = 0;
+  try {
+    const result = await window.electronAPI.startClawd();
+    if (result?.error) {
+      setClawdStatusMessage(result.error, 'error');
+    } else {
+      setClawdStatusMessage('Gateway started.', 'success');
+    }
+  } catch (err) {
+    console.error('[OpenClawd] Start failed:', err);
+    setClawdStatusMessage('Start failed.', 'error');
+  }
+  refreshClawdStatus();
+}
+
+async function handleClawdStop() {
+  if (!window.electronAPI?.stopClawd) return;
+  setClawdStatusMessage('Stopping…', 'neutral');
+  try {
+    const result = await window.electronAPI.stopClawd();
+    if (result?.error) {
+      setClawdStatusMessage(result.error, 'error');
+    } else {
+      setClawdStatusMessage('Gateway stopped.', 'success');
+    }
+  } catch (err) {
+    console.error('[OpenClawd] Stop failed:', err);
+    setClawdStatusMessage('Stop failed.', 'error');
+  }
+  refreshClawdStatus();
+}
+
+async function handleClawdRestart() {
+  await handleClawdStop();
+  await handleClawdStart();
+}
+
+async function loadAutomationTemplates() {
+  if (!automationTemplates || !window.electronAPI?.listAutomationTemplates) return;
+  try {
+    const templates = await window.electronAPI.listAutomationTemplates();
+    automationTemplates.innerHTML = '';
+    if (!templates || templates.length === 0) {
+      automationTemplates.innerHTML = '<div class="empty-state">No templates available.</div>';
+      return;
+    }
+    templates.forEach(template => {
+      const card = document.createElement('div');
+      card.className = 'template-card';
+      card.innerHTML = `
+        <div class="integration-title">${template.title}</div>
+        <div class="integration-meta">${template.category || 'Template'}</div>
+        <p class="integration-desc">${template.prompt}</p>
+      `;
+      card.addEventListener('click', () => {
+        if (automationName) automationName.value = template.title;
+        if (automationPrompt) automationPrompt.value = template.prompt;
+        if (automationSchedule) automationSchedule.value = template.schedule;
+        if (automationProvider) {
+          automationProvider.value = settingsCache.personalization?.defaultProvider || selectedProvider;
+        }
+        if (automationModel && settingsCache.personalization?.defaultModel) {
+          automationModel.value = settingsCache.personalization.defaultModel;
+        }
+        if (automationEnabled) automationEnabled.checked = true;
+        setAutomationStatus('Template loaded.', 'success');
+      });
+      automationTemplates.appendChild(card);
+    });
+  } catch (err) {
+    console.error('[TEMPLATES] Failed to load:', err);
+    automationTemplates.innerHTML = '<div class="empty-state">Failed to load templates.</div>';
+  }
+}
+
+async function loadSettingsLists() {
+  await Promise.all([
+    loadMcpServers(),
+    loadGitProfiles(),
+    loadEnvironments(),
+    loadWorktrees(),
+    loadArchivedThreadsList()
+  ]);
+}
+
+async function loadMcpServers() {
+  if (!mcpList || !window.electronAPI?.listMcpServers) return;
+  try {
+    const list = await window.electronAPI.listMcpServers();
+    mcpList.innerHTML = '';
+    if (!list || list.length === 0) {
+      mcpList.innerHTML = '<div class="empty-state">No MCP servers yet.</div>';
+      return;
+    }
+    list.forEach(item => {
+      const row = document.createElement('div');
+      row.className = 'settings-item';
+      row.innerHTML = `
+        <div>
+          <div class="settings-label">${item.name}</div>
+          <small>${item.url}</small>
+        </div>
+        <div class="settings-item-actions">
+          <span class="status-chip ${item.status}">${item.status}</span>
+          <button class="ghost-btn" data-action="toggle">${item.status === 'connected' ? 'Disable' : 'Enable'}</button>
+          <button class="ghost-btn" data-action="delete">Remove</button>
+        </div>
+      `;
+      row.querySelector('[data-action="toggle"]').addEventListener('click', async () => {
+        const nextStatus = item.status === 'connected' ? 'disabled' : 'connected';
+        await window.electronAPI.updateMcpServer(item.id, {
+          name: item.name,
+          url: item.url,
+          status: nextStatus
+        });
+        loadMcpServers();
+      });
+      row.querySelector('[data-action="delete"]').addEventListener('click', async () => {
+        await window.electronAPI.deleteMcpServer(item.id);
+        loadMcpServers();
+      });
+      mcpList.appendChild(row);
+    });
+  } catch (err) {
+    console.error('[MCP] Failed to load:', err);
+    mcpList.innerHTML = '<div class="empty-state">Failed to load MCP servers.</div>';
+  }
+}
+
+async function handleAddMcpServer() {
+  if (!mcpName || !mcpUrl) return;
+  const name = mcpName.value.trim();
+  const url = mcpUrl.value.trim();
+  if (!name || !url) return;
+  await window.electronAPI.createMcpServer({
+    name,
+    url,
+    status: mcpStatus?.value || 'connected'
+  });
+  mcpName.value = '';
+  mcpUrl.value = '';
+  if (mcpStatus) mcpStatus.value = 'connected';
+  loadMcpServers();
+}
+
+async function loadGitProfiles() {
+  if (!gitList || !window.electronAPI?.listGitProfiles) return;
+  try {
+    const list = await window.electronAPI.listGitProfiles();
+    gitList.innerHTML = '';
+    if (!list || list.length === 0) {
+      gitList.innerHTML = '<div class="empty-state">No Git profiles yet.</div>';
+      return;
+    }
+    list.forEach(item => {
+      const row = document.createElement('div');
+      row.className = 'settings-item';
+      row.innerHTML = `
+        <div>
+          <div class="settings-label">${item.name}</div>
+          <small>${item.remote || ''} ${item.branch ? `· ${item.branch}` : ''}</small>
+        </div>
+        <div class="settings-item-actions">
+          <button class="ghost-btn" data-action="delete">Remove</button>
+        </div>
+      `;
+      row.querySelector('[data-action="delete"]').addEventListener('click', async () => {
+        await window.electronAPI.deleteGitProfile(item.id);
+        loadGitProfiles();
+      });
+      gitList.appendChild(row);
+    });
+  } catch (err) {
+    console.error('[GIT] Failed to load:', err);
+    gitList.innerHTML = '<div class="empty-state">Failed to load git profiles.</div>';
+  }
+}
+
+async function handleAddGitProfile() {
+  if (!gitName) return;
+  const name = gitName.value.trim();
+  if (!name) return;
+  await window.electronAPI.createGitProfile({
+    name,
+    remote: gitRemote?.value?.trim() || '',
+    branch: gitBranch?.value?.trim() || ''
+  });
+  gitName.value = '';
+  if (gitRemote) gitRemote.value = '';
+  if (gitBranch) gitBranch.value = '';
+  loadGitProfiles();
+}
+
+async function loadEnvironments() {
+  if (!envList || !window.electronAPI?.listEnvironments) return;
+  try {
+    const list = await window.electronAPI.listEnvironments();
+    envList.innerHTML = '';
+    if (!list || list.length === 0) {
+      envList.innerHTML = '<div class="empty-state">No environments yet.</div>';
+      return;
+    }
+    list.forEach(item => {
+      const row = document.createElement('div');
+      row.className = 'settings-item';
+      row.innerHTML = `
+        <div>
+          <div class="settings-label">${item.name}</div>
+          <small>${item.vars}</small>
+        </div>
+        <div class="settings-item-actions">
+          <button class="ghost-btn" data-action="delete">Remove</button>
+        </div>
+      `;
+      row.querySelector('[data-action="delete"]').addEventListener('click', async () => {
+        await window.electronAPI.deleteEnvironment(item.id);
+        loadEnvironments();
+      });
+      envList.appendChild(row);
+    });
+  } catch (err) {
+    console.error('[ENV] Failed to load:', err);
+    envList.innerHTML = '<div class="empty-state">Failed to load environments.</div>';
+  }
+}
+
+async function handleAddEnvironment() {
+  if (!envName) return;
+  const name = envName.value.trim();
+  const vars = envVars?.value?.trim() || '';
+  if (!name) return;
+  await window.electronAPI.createEnvironment({
+    name,
+    vars
+  });
+  envName.value = '';
+  if (envVars) envVars.value = '';
+  loadEnvironments();
+}
+
+async function loadWorktrees() {
+  if (!worktreeList || !window.electronAPI?.listWorktrees) return;
+  try {
+    const list = await window.electronAPI.listWorktrees();
+    worktreeList.innerHTML = '';
+    if (!list || list.length === 0) {
+      worktreeList.innerHTML = '<div class="empty-state">No worktrees yet.</div>';
+      return;
+    }
+    list.forEach(item => {
+      const row = document.createElement('div');
+      row.className = 'settings-item';
+      row.innerHTML = `
+        <div>
+          <div class="settings-label">${item.name}</div>
+          <small>${item.path}</small>
+        </div>
+        <div class="settings-item-actions">
+          <span class="status-chip ${item.status}">${item.status}</span>
+          <button class="ghost-btn" data-action="toggle">${item.status === 'active' ? 'Pause' : 'Resume'}</button>
+          <button class="ghost-btn" data-action="delete">Remove</button>
+        </div>
+      `;
+      row.querySelector('[data-action="toggle"]').addEventListener('click', async () => {
+        const nextStatus = item.status === 'active' ? 'paused' : 'active';
+        await window.electronAPI.updateWorktree(item.id, {
+          name: item.name,
+          path: item.path,
+          status: nextStatus
+        });
+        loadWorktrees();
+      });
+      row.querySelector('[data-action="delete"]').addEventListener('click', async () => {
+        await window.electronAPI.deleteWorktree(item.id);
+        loadWorktrees();
+      });
+      worktreeList.appendChild(row);
+    });
+  } catch (err) {
+    console.error('[WORKTREES] Failed to load:', err);
+    worktreeList.innerHTML = '<div class="empty-state">Failed to load worktrees.</div>';
+  }
+}
+
+async function handleAddWorktree() {
+  if (!worktreeName || !worktreePath) return;
+  const name = worktreeName.value.trim();
+  const pathValue = worktreePath.value.trim();
+  if (!name || !pathValue) return;
+  await window.electronAPI.createWorktree({
+    name,
+    path: pathValue,
+    status: worktreeStatus?.value || 'active'
+  });
+  worktreeName.value = '';
+  worktreePath.value = '';
+  if (worktreeStatus) worktreeStatus.value = 'active';
+  loadWorktrees();
+}
+
+async function loadArchivedThreadsList() {
+  if (!archivedList || !window.electronAPI?.listArchivedThreads) return;
+  try {
+    const list = await window.electronAPI.listArchivedThreads();
+    archivedList.innerHTML = '';
+    if (!list || list.length === 0) {
+      archivedList.innerHTML = '<div class="empty-state">No archived threads.</div>';
+      return;
+    }
+    list.forEach(item => {
+      const row = document.createElement('div');
+      row.className = 'settings-item';
+      row.innerHTML = `
+        <div>
+          <div class="settings-label">${item.title}</div>
+          <small>Archived ${new Date(item.archived_at).toLocaleString()}</small>
+        </div>
+        <div class="settings-item-actions">
+          <button class="ghost-btn" data-action="restore">Restore</button>
+        </div>
+      `;
+      row.querySelector('[data-action="restore"]').addEventListener('click', async () => {
+        await window.electronAPI.deleteArchivedThread(item.id);
+        const chat = allChats.find(c => c.id === item.id);
+        if (chat) {
+          chat.archived = false;
+          localStorage.setItem('allChats', JSON.stringify(allChats));
+        }
+        renderChatHistory();
+        loadArchivedThreadsList();
+      });
+      archivedList.appendChild(row);
+    });
+  } catch (err) {
+    console.error('[ARCHIVE] Failed to load archived threads:', err);
+    archivedList.innerHTML = '<div class="empty-state">Failed to load archived threads.</div>';
+  }
 }
 
 // Setup dropdown functionality
@@ -706,23 +2968,28 @@ function handleFileSelect(event, context) {
       return;
     }
 
-    // Read file as base64 for images or text
+    if (file.type && file.type.startsWith('image/')) {
+      alert('Images are not supported yet. Please attach text-based files.');
+      return;
+    }
+
+    if (file.size > 200 * 1024) {
+      alert(`"${file.name}" is larger than 200KB and will be truncated before sending.`);
+    }
+
+    // Read file as text (v1: text-only attachments)
     const reader = new FileReader();
     reader.onload = (e) => {
       attachedFiles.push({
         name: file.name,
-        type: file.type,
+        mime: file.type || 'text/plain',
         size: file.size,
-        data: e.target.result
+        content: e.target.result
       });
       renderAttachedFiles(context);
     };
 
-    if (file.type.startsWith('image/')) {
-      reader.readAsDataURL(file);
-    } else {
-      reader.readAsText(file);
-    }
+    reader.readAsText(file);
   });
 
   // Reset input
@@ -862,7 +3129,17 @@ async function stopCurrentQuery() {
 
 // Handle key press
 function handleKeyPress(e, form) {
-  if (e.key === 'Enter' && !e.shiftKey) {
+  if (e.key !== 'Enter') return;
+
+  if (requireCmdEnter) {
+    if (e.metaKey || e.ctrlKey) {
+      e.preventDefault();
+      form.dispatchEvent(new Event('submit'));
+    }
+    return;
+  }
+
+  if (!e.shiftKey) {
     e.preventDefault();
     form.dispatchEvent(new Event('submit'));
   }
@@ -881,44 +3158,95 @@ function resetTextareaHeight(textarea) {
 
 // Switch to chat view
 function switchToChatView() {
-  homeView.classList.add('hidden');
-  chatView.classList.remove('hidden');
-  messageInput.focus();
+  setActiveView('chat');
+  showChatWorkspace();
 }
 
 // Handle form submission
 async function handleSendMessage(e) {
   e.preventDefault();
 
-  // If currently streaming, stop the query instead
-  if (isWaitingForResponse) {
-    await stopCurrentQuery();
-    return;
-  }
-
   const input = isFirstMessage ? homeInput : messageInput;
   const message = input.value.trim();
 
   if (!message) {
+    if (isWaitingForResponse) {
+      await stopCurrentQuery();
+    }
     return;
   }
 
+  if (isWaitingForResponse) {
+    if (followUpBehavior === 'queue') {
+      queuePendingMessage(message);
+      input.value = '';
+      resetTextareaHeight(input);
+      updateSendButton(homeInput, homeSendBtn);
+      updateSendButton(messageInput, chatSendBtn);
+      return;
+    }
+    await stopCurrentQuery();
+  }
+
+  input.value = '';
+  resetTextareaHeight(input);
+  await sendMessageInternal(message);
+}
+
+function queuePendingMessage(message) {
+  const attachmentsForRequest = attachedFiles.slice(0, 5).map(file => ({
+    name: file.name,
+    mime: file.mime || 'text/plain',
+    content: typeof file.content === 'string' ? file.content : ''
+  }));
+  const usePinnedMemory = usePinnedMemoryInChat;
+
+  // Clear attachments immediately when queueing (do not persist in localStorage).
+  attachedFiles = [];
+  document.querySelectorAll('.attached-files').forEach(el => el.remove());
+
+  pendingMessages.push({ message, attachments: attachmentsForRequest, usePinnedMemory });
+  console.log(`[Chat] Queued message (${pendingMessages.length} pending)`);
+}
+
+async function processQueuedMessages() {
+  if (isWaitingForResponse) return;
+  if (pendingMessages.length === 0) return;
+  const next = pendingMessages.shift();
+  if (next) {
+    const msg = typeof next === 'string' ? next : next.message;
+    const opts = typeof next === 'string' ? null : { attachments: next.attachments, usePinnedMemory: next.usePinnedMemory };
+    await sendMessageInternal(msg, opts);
+  }
+}
+
+async function sendMessageInternal(message, options = null) {
   if (isFirstMessage) {
     // Always generate a new ID for a new conversation
     currentChatId = generateId();
+    currentChatCreatedAt = Date.now();
     switchToChatView();
     isFirstMessage = false;
     chatTitle.textContent = message.length > 30 ? message.substring(0, 30) + '...' : message;
   } else if (!currentChatId) {
     currentChatId = generateId();
+    currentChatCreatedAt = Date.now();
     chatTitle.textContent = message.length > 30 ? message.substring(0, 30) + '...' : message;
   }
 
+  const attachmentsForRequest = (options?.attachments || attachedFiles.slice(0, 5)).map(file => ({
+    name: file.name,
+    mime: file.mime || 'text/plain',
+    content: typeof file.content === 'string' ? file.content : ''
+  }));
+  const usePinnedMemory = options?.usePinnedMemory ?? usePinnedMemoryInChat;
+
+  // Clear attachments after queueing them for this request (do not persist in localStorage).
+  attachedFiles = [];
+  document.querySelectorAll('.attached-files').forEach(el => el.remove());
+
   // Add user message
   addUserMessage(message);
-
-  input.value = '';
-  resetTextareaHeight(input);
 
   // Set loading state
   isWaitingForResponse = true;
@@ -937,7 +3265,10 @@ async function handleSendMessage(e) {
   try {
     console.log('[Chat] Sending message to API...');
     // Pass chatId, provider, and model for session management
-    const response = await window.electronAPI.sendMessage(message, currentChatId, selectedProvider, selectedModel);
+    const response = await window.electronAPI.sendMessage(message, currentChatId, selectedProvider, selectedModel, {
+      attachments: attachmentsForRequest,
+      usePinnedMemory
+    });
     console.log('[Chat] Response received');
 
     const reader = await response.getReader();
@@ -1126,6 +3457,7 @@ async function handleSendMessage(e) {
     updateSendButton(messageInput, chatSendBtn);
     updateSendButton(homeInput, homeSendBtn);
     messageInput.focus();
+    processQueuedMessages();
   }
 }
 
@@ -1253,6 +3585,7 @@ window.startNewChat = function() {
   }
 
   currentChatId = null;
+  currentChatCreatedAt = null;
 
   // Clear all state
   chatMessages.innerHTML = '';
@@ -1263,6 +3596,7 @@ window.startNewChat = function() {
   todos = [];
   toolCalls = [];
   attachedFiles = [];
+  document.querySelectorAll('.attached-files').forEach(el => el.remove());
 
   // Reset sidebar
   stepsList.innerHTML = '';
@@ -1272,9 +3606,10 @@ window.startNewChat = function() {
   emptyTools.style.display = 'block';
 
   // Switch back to home view
-  homeView.classList.remove('hidden');
-  chatView.classList.add('hidden');
-  homeInput.focus();
+  if (currentView === 'chat') {
+    showChatWorkspace();
+    homeInput.focus();
+  }
 
   // Clear currentChatId from localStorage
   localStorage.removeItem('currentChatId');
