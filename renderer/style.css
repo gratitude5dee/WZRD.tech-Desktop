@@ -26,6 +26,26 @@
   --font-code-size: 13px;
   --motion-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
   --focus-ring: 0 0 0 3px rgba(107, 231, 255, 0.25);
+
+  /* Rhythm */
+  --space-1: 6px;
+  --space-2: 10px;
+  --space-3: 14px;
+  --space-4: 18px;
+  --space-5: 24px;
+
+  /* Type scale */
+  --text-xs: 11px;
+  --text-sm: 12px;
+  --text-md: 13px;
+  --text-lg: 15px;
+  --title: 22px;
+
+  /* Surfaces */
+  --card-radius: 18px;
+  --control-radius: 12px;
+  --card-pad: 18px;
+  --hairline: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 * {
@@ -100,6 +120,10 @@ pre {
   display: none !important;
 }
 
+body.modal-open .view {
+  overflow: hidden;
+}
+
 /* App Container */
 .app-container {
   position: relative;
@@ -135,20 +159,11 @@ pre {
   align-items: center;
   gap: 10px;
   padding: 10px 14px;
-  border: 1px solid var(--border-light);
-  background: var(--bg-white);
-  border-radius: 8px;
+  border-radius: 12px;
   cursor: pointer;
   font-family: inherit;
   font-size: 14px;
   font-weight: 500;
-  color: var(--text-primary);
-  transition: all 0.15s;
-}
-
-.new-chat-sidebar-btn:hover {
-  background: var(--bg-cream);
-  border-color: var(--text-tertiary);
 }
 
 .new-chat-sidebar-btn svg {
@@ -2418,6 +2433,44 @@ h1, h2, h3, .greeting-text, .modal-header h2 {
   gap: 12px;
 }
 
+/* Ensure inline CRUD rows match the glass input system */
+.form-row input,
+.form-row select,
+.settings-row input[type="text"],
+.settings-row input[type="number"],
+.settings-row input[type="password"],
+.settings-row select {
+  height: 40px;
+  background: rgba(7, 12, 24, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--control-radius);
+  padding: 10px 12px;
+  color: var(--text-primary);
+  font-family: inherit;
+  transition: background 0.18s var(--motion-ease), border-color 0.18s var(--motion-ease), box-shadow 0.18s var(--motion-ease);
+}
+
+.form-row input::placeholder,
+.settings-row input::placeholder {
+  color: var(--text-tertiary);
+  opacity: 0.9;
+}
+
+.form-row input:hover,
+.form-row select:hover,
+.settings-row input:hover,
+.settings-row select:hover {
+  background: rgba(7, 12, 24, 0.78);
+  border-color: rgba(107, 231, 255, 0.22);
+}
+
+.form-row input:focus-visible,
+.form-row select:focus-visible,
+.settings-row input:focus-visible,
+.settings-row select:focus-visible {
+  box-shadow: var(--focus-ring);
+}
+
 .modal-actions {
   display: flex;
   gap: 10px;
@@ -2539,6 +2592,10 @@ h1, h2, h3, .greeting-text, .modal-header h2 {
   color: var(--text-tertiary);
 }
 
+.nav-title:not(:first-child) {
+  margin-top: 10px;
+}
+
 .nav-item {
   display: flex;
   align-items: center;
@@ -2551,13 +2608,19 @@ h1, h2, h3, .greeting-text, .modal-header h2 {
   cursor: pointer;
   text-align: left;
   font-size: 14px;
-  transition: all 0.2s ease;
+  transition: background 0.18s var(--motion-ease),
+    border-color 0.18s var(--motion-ease),
+    color 0.18s var(--motion-ease),
+    transform 0.18s var(--motion-ease),
+    box-shadow 0.18s var(--motion-ease);
 }
 
 .nav-item:hover {
   color: var(--text-primary);
   background: rgba(255, 255, 255, 0.08);
   border-color: rgba(255, 255, 255, 0.12);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.15);
 }
 
 .nav-item.active {
@@ -2567,16 +2630,25 @@ h1, h2, h3, .greeting-text, .modal-header h2 {
   box-shadow: inset 0 0 12px rgba(107, 231, 255, 0.2);
 }
 
-.nav-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.3);
+.nav-icon {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  color: rgba(184, 198, 230, 0.65);
+  transition: color 0.18s var(--motion-ease), filter 0.18s var(--motion-ease);
 }
 
-.nav-item.active .nav-dot {
-  background: var(--accent-cyan);
-  box-shadow: 0 0 8px rgba(107, 231, 255, 0.8);
+.nav-label {
+  flex: 1;
+}
+
+.nav-item:hover .nav-icon {
+  color: rgba(237, 243, 255, 0.78);
+}
+
+.nav-item.active .nav-icon {
+  color: var(--accent-cyan);
+  filter: drop-shadow(0 0 10px rgba(107, 231, 255, 0.35));
 }
 
 .nav-badge {
@@ -2589,15 +2661,6 @@ h1, h2, h3, .greeting-text, .modal-header h2 {
   color: var(--text-primary);
   background: rgba(140, 123, 255, 0.22);
   border: 1px solid rgba(140, 123, 255, 0.35);
-}
-
-.nav-item {
-  transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
-}
-
-.nav-item:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.15);
 }
 
 button:focus-visible,
@@ -2702,7 +2765,7 @@ textarea:focus-visible,
 }
 
 .view {
-  padding: 24px;
+  padding: var(--space-5);
   display: flex;
   flex-direction: column;
   gap: 18px;
@@ -2749,19 +2812,35 @@ textarea:focus-visible,
 
 .back-link {
   margin-bottom: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-secondary);
+  width: fit-content;
+  transition: transform 0.18s var(--motion-ease), background 0.18s var(--motion-ease), color 0.18s var(--motion-ease);
+}
+
+.back-link:hover {
+  background: rgba(255, 255, 255, 0.09);
+  color: var(--text-primary);
+  transform: translateY(-1px);
 }
 
 .view-header h2 {
-  font-size: 22px;
+  font-size: var(--title);
 }
 
 .view-subtitle {
   color: var(--text-tertiary);
-  font-size: 13px;
+  font-size: var(--text-md);
 }
 
 .section-title {
-  font-size: 12px;
+  font-size: var(--text-sm);
   text-transform: uppercase;
   letter-spacing: 0.18em;
   color: var(--text-tertiary);
@@ -2943,8 +3022,8 @@ textarea:focus-visible,
 }
 
 .integration-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.30);
+  transform: translateY(-1px);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.26);
 }
 
 .integration-logo-wrap {
@@ -3052,6 +3131,14 @@ textarea:focus-visible,
   display: none;
 }
 
+.drawer-overlay.closing .drawer-panel {
+  animation: drawerOut 160ms var(--motion-ease) forwards;
+}
+
+.drawer-overlay.closing .drawer-scrim {
+  animation: scrimOut 160ms var(--motion-ease) forwards;
+}
+
 .drawer-scrim {
   position: absolute;
   inset: 0;
@@ -3082,6 +3169,16 @@ textarea:focus-visible,
     transform: translateX(0);
     opacity: 1;
   }
+}
+
+@keyframes drawerOut {
+  from { transform: translateX(0); opacity: 1; }
+  to { transform: translateX(14px); opacity: 0.88; }
+}
+
+@keyframes scrimOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
 }
 
 .drawer-header {
@@ -3300,6 +3397,14 @@ textarea:focus-visible,
   display: none;
 }
 
+.sheet-overlay.closing .sheet-panel {
+  animation: sheetOut 160ms var(--motion-ease) forwards;
+}
+
+.sheet-overlay.closing .sheet-scrim {
+  animation: scrimOut 160ms var(--motion-ease) forwards;
+}
+
 .sheet-scrim {
   position: absolute;
   inset: 0;
@@ -3326,6 +3431,11 @@ textarea:focus-visible,
     transform: translateY(0);
     opacity: 1;
   }
+}
+
+@keyframes sheetOut {
+  from { transform: translateY(0); opacity: 1; }
+  to { transform: translateY(10px); opacity: 0.86; }
 }
 
 .sheet-header {
@@ -3654,7 +3764,10 @@ textarea:focus-visible,
   color: var(--text-secondary);
   text-align: left;
   cursor: pointer;
-  transition: all 0.2s var(--motion-ease);
+  transition: background 0.18s var(--motion-ease),
+    border-color 0.18s var(--motion-ease),
+    color 0.18s var(--motion-ease),
+    transform 0.18s var(--motion-ease);
 }
 
 .settings-nav-item.active {
@@ -3672,6 +3785,7 @@ textarea:focus-visible,
   display: flex;
   flex-direction: column;
   gap: 18px;
+  max-width: 980px;
 }
 
 .settings-section {
@@ -3681,8 +3795,8 @@ textarea:focus-visible,
 }
 
 .settings-card {
-  padding: 18px;
-  border-radius: 18px;
+  padding: var(--card-pad);
+  border-radius: var(--card-radius);
   border: 1px solid rgba(255, 255, 255, 0.08);
   background: rgba(255, 255, 255, 0.05);
   display: flex;
@@ -3722,7 +3836,7 @@ textarea:focus-visible,
   border: none;
   color: var(--text-secondary);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background 0.18s var(--motion-ease), color 0.18s var(--motion-ease), transform 0.18s var(--motion-ease);
   font-size: 12px;
 }
 
@@ -4026,15 +4140,15 @@ textarea:focus-visible,
   justify-content: center;
   gap: 12px;
   z-index: 2000;
-  animation: introFadeOut 1.0s var(--motion-ease) forwards;
-  animation-delay: 2.2s;
+  animation: introFadeOut 0.9s var(--motion-ease) forwards;
+  animation-delay: 2.55s;
 }
 
 .intro-orb {
   width: 160px;
   height: 160px;
   position: relative;
-  animation: orbFloat 2.2s var(--motion-ease) forwards;
+  animation: orbFloat 2.35s var(--motion-ease) forwards;
 }
 
 .intro-orb-img,
@@ -4046,7 +4160,21 @@ textarea:focus-visible,
 
 .intro-orb-img {
   object-fit: cover;
-  filter: drop-shadow(0 0 50px rgba(140, 123, 255, 0.7));
+  filter: drop-shadow(0 0 60px rgba(140, 123, 255, 0.7));
+}
+
+.intro-orb::before {
+  content: '';
+  position: absolute;
+  inset: -14px;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.14), transparent 55%),
+    conic-gradient(from 190deg, transparent, rgba(255, 255, 255, 0.16), transparent 55%);
+  opacity: 0;
+  filter: blur(8px);
+  mix-blend-mode: screen;
+  animation: refractSweep 2.6s var(--motion-ease) forwards;
 }
 
 .intro-orb::after {
@@ -4057,7 +4185,7 @@ textarea:focus-visible,
   border: 1px solid rgba(255, 255, 255, 0.2);
   box-shadow: 0 0 70px rgba(140, 123, 255, 0.5);
   opacity: 0;
-  animation: orbShimmer 2.4s var(--motion-ease) forwards;
+  animation: orbShimmer 2.6s var(--motion-ease) forwards;
 }
 
 .intro-orb-fallback {
@@ -4072,8 +4200,8 @@ textarea:focus-visible,
   font-size: 32px;
   letter-spacing: 0.08em;
   opacity: 0;
-  animation: wordmarkReveal 1.6s var(--motion-ease) forwards;
-  animation-delay: 0.6s;
+  animation: wordmarkReveal 1.7s var(--motion-ease) forwards;
+  animation-delay: 0.75s;
 }
 
 .intro-subtitle {
@@ -4082,8 +4210,8 @@ textarea:focus-visible,
   letter-spacing: 0.2em;
   font-size: 11px;
   opacity: 0;
-  animation: subtitleReveal 1.4s var(--motion-ease) forwards;
-  animation-delay: 0.9s;
+  animation: subtitleReveal 1.35s var(--motion-ease) forwards;
+  animation-delay: 1.05s;
 }
 
 @keyframes orbFloat {
@@ -4143,6 +4271,24 @@ textarea:focus-visible,
   to {
     opacity: 0;
     visibility: hidden;
+  }
+}
+
+@keyframes refractSweep {
+  0% {
+    opacity: 0;
+    transform: rotate(-14deg) scale(0.88);
+  }
+  35% {
+    opacity: 1;
+  }
+  75% {
+    opacity: 0.75;
+    transform: rotate(10deg) scale(1.02);
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(18deg) scale(1.05);
   }
 }
 

@@ -1015,6 +1015,17 @@ function setupEventListeners() {
       threadFilterPopover.classList.add('hidden');
     }
   });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    if (authConfigSheetOverlay && !authConfigSheetOverlay.classList.contains('hidden')) {
+      closeAuthConfigSheetOverlay();
+      return;
+    }
+    if (integrationDrawerOverlay && !integrationDrawerOverlay.classList.contains('hidden')) {
+      closeIntegrationDetails();
+    }
+  });
 }
 
 function setupWordmarkFallback() {
@@ -1059,7 +1070,7 @@ function setupIntroAnimation() {
 
   setTimeout(() => {
     introOverlay.style.display = 'none';
-  }, 3200);
+  }, 3550);
 }
 
 function setupNavigation() {
@@ -1579,6 +1590,12 @@ function renderIntegrations({ error = null } = {}) {
   allList.forEach((item) => integrationsGrid.appendChild(renderIntegrationCard(item)));
 }
 
+function syncModalOpen() {
+  const isDrawerOpen = integrationDrawerOverlay && !integrationDrawerOverlay.classList.contains('hidden');
+  const isSheetOpen = authConfigSheetOverlay && !authConfigSheetOverlay.classList.contains('hidden');
+  document.body.classList.toggle('modal-open', Boolean(isDrawerOpen || isSheetOpen));
+}
+
 function openIntegrationDetails(item) {
   if (!integrationDrawerOverlay) return;
   selectedIntegration = item;
@@ -1623,8 +1640,10 @@ function openIntegrationDetails(item) {
     }
   }
 
+  integrationDrawerOverlay.classList.remove('closing');
   integrationDrawerOverlay.classList.remove('hidden');
   integrationDrawerOverlay.setAttribute('aria-hidden', 'false');
+  syncModalOpen();
 
   setIntegrationDrawerTab('accounts');
   loadIntegrationAccounts();
@@ -1636,11 +1655,26 @@ function closeIntegrationDetails() {
   selectedIntegration = null;
   selectedIntegrationAccounts = [];
   selectedIntegrationTab = 'accounts';
-  if (integrationDrawerOverlay) {
-    integrationDrawerOverlay.classList.add('hidden');
-    integrationDrawerOverlay.setAttribute('aria-hidden', 'true');
-  }
   closeAuthConfigSheetOverlay();
+
+  if (!integrationDrawerOverlay) {
+    syncModalOpen();
+    return;
+  }
+
+  if (integrationDrawerOverlay.classList.contains('hidden')) {
+    integrationDrawerOverlay.setAttribute('aria-hidden', 'true');
+    syncModalOpen();
+    return;
+  }
+
+  integrationDrawerOverlay.classList.add('closing');
+  integrationDrawerOverlay.setAttribute('aria-hidden', 'true');
+  setTimeout(() => {
+    integrationDrawerOverlay.classList.remove('closing');
+    integrationDrawerOverlay.classList.add('hidden');
+    syncModalOpen();
+  }, 170);
 }
 
 function setIntegrationDrawerTab(tab) {
@@ -1787,16 +1821,28 @@ function openAuthConfigSheet() {
   if (!selectedIntegration?.id) return;
   authConfigToolkitSlug = selectedIntegration.id;
   if (!authConfigSheetOverlay) return;
+  authConfigSheetOverlay.classList.remove('closing');
   authConfigSheetOverlay.classList.remove('hidden');
   authConfigSheetOverlay.setAttribute('aria-hidden', 'false');
+  syncModalOpen();
   loadAuthConfigs();
 }
 
 function closeAuthConfigSheetOverlay() {
   authConfigToolkitSlug = null;
   if (authConfigSheetOverlay) {
-    authConfigSheetOverlay.classList.add('hidden');
-    authConfigSheetOverlay.setAttribute('aria-hidden', 'true');
+    if (authConfigSheetOverlay.classList.contains('hidden')) {
+      authConfigSheetOverlay.setAttribute('aria-hidden', 'true');
+      syncModalOpen();
+    } else {
+      authConfigSheetOverlay.classList.add('closing');
+      authConfigSheetOverlay.setAttribute('aria-hidden', 'true');
+      setTimeout(() => {
+        authConfigSheetOverlay.classList.remove('closing');
+        authConfigSheetOverlay.classList.add('hidden');
+        syncModalOpen();
+      }, 170);
+    }
   }
   if (authConfigList) authConfigList.innerHTML = '';
   setAuthConfigSheetStatus('', 'neutral');
