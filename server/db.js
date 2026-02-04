@@ -150,6 +150,26 @@ function createTables() {
       title TEXT NOT NULL,
       archived_at TEXT DEFAULT (datetime('now'))
     );
+
+    CREATE TABLE IF NOT EXISTS composio_connected_accounts (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      toolkit_slug TEXT NOT NULL,
+      auth_config_id TEXT,
+      status TEXT NOT NULL,
+      is_disabled INTEGER DEFAULT 0,
+      label TEXT,
+      is_default INTEGER DEFAULT 0,
+      state_json TEXT,
+      created_at TEXT DEFAULT (datetime('now')),
+      updated_at TEXT DEFAULT (datetime('now'))
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_composio_accounts_user_toolkit
+      ON composio_connected_accounts (user_id, toolkit_slug);
+
+    CREATE INDEX IF NOT EXISTS idx_composio_accounts_user_toolkit_default
+      ON composio_connected_accounts (user_id, toolkit_slug, is_default);
   `);
 
   try {
@@ -673,4 +693,215 @@ export function addActivity({ type, title, detail }) {
     INSERT INTO activity_events (type, title, detail)
     VALUES (?, ?, ?)
   `).run(type, title, detail || null);
+}
+
+export function getComposioAccountById(id) {
+  initDb();
+  if (!id) return null;
+  return db.prepare('SELECT * FROM composio_connected_accounts WHERE id = ?').get(id);
+}
+
+export function upsertComposioAccount(remoteAccount, { userId }) {
+  initDb();
+  if (!remoteAccount?.id) return null;
+  const toolkitSlug = remoteAccount?.toolkit?.slug || remoteAccount?.toolkitSlug || null;
+  if (!toolkitSlug) return null;
+
+  const existing = db.prepare('SELECT * FROM composio_connected_accounts WHERE id = ?').get(remoteAccount.id);
+  const state = remoteAccount?.state ?? remoteAccount?.data ?? remoteAccount?.params ?? null;
+  const stateJson = state ? JSON.stringify(state) : null;
+
+  const payload = {
+    id: remoteAccount.id,
+    user_id: userId,
+    toolkit_slug: toolkitSlug,
+    auth_config_id: remoteAccount?.authConfig?.id || remoteAccount?.authConfigId || null,
+    status: remoteAccount?.status || 'INACTIVE',
+    is_disabled: remoteAccount?.isDisabled ? 1 : 0,
+    state_json: stateJson,
+    created_at: remoteAccount?.createdAt || existing?.created_at || null,
+    updated_at: remoteAccount?.updatedAt || null
+  };
+
+  if (existing) {
+    db.prepare(`
+      UPDATE composio_connected_accounts
+      SET user_id = @user_id,
+          toolkit_slug = @toolkit_slug,
+          auth_config_id = @auth_config_id,
+          status = @status,
+          is_disabled = @is_disabled,
+          state_json = @state_json,
+          created_at = COALESCE(@created_at, created_at),
+          updated_at = COALESCE(@updated_at, datetime('now'))
+      WHERE id = @id
+    `).run(payload);
+  } else {
+    db.prepare(`
+      INSERT INTO composio_connected_accounts (
+        id,
+        user_id,
+        toolkit_slug,
+        auth_config_id,
+        status,
+        is_disabled,
+        label,
+        is_default,
+        state_json,
+        created_at,
+        updated_at
+      )
+      VALUES (
+        @id,
+        @user_id,
+        @toolkit_slug,
+        @auth_config_id,
+        @status,
+        @is_disabled,
+        NULL,
+        0,
+        @state_json,
+        COALESCE(@created_at, datetime('now')),
+        COALESCE(@updated_at, datetime('now'))
+      )
+    `).run(payload);
+  }
+
+  return getComposioAccountById(remoteAccount.id);
+}
+
+export function upsertComposioConnectionRequest({
+  id,
+  userId,
+  toolkitSlug,
+  authConfigId = null,
+  status = 'INITIATED'
+}) {
+  initDb();
+  if (!id || !userId || !toolkitSlug) return null;
+  const existing = getComposioAccountById(id);
+  if (existing) return existing;
+  db.prepare(`
+    INSERT INTO composio_connected_accounts (
+      id,
+      user_id,
+      toolkit_slug,
+      auth_config_id,
+      status,
+      is_disabled,
+      label,
+      is_default,
+      state_json,
+      created_at,
+      updated_at
+    )
+    VALUES (
+      @id,
+      @user_id,
+      @toolkit_slug,
+      @auth_config_id,
+      @status,
+      0,
+      NULL,
+      0,
+      NULL,
+      datetime('now'),
+      datetime('now')
+    )
+  `).run({
+    id,
+    user_id: userId,
+    toolkit_slug: toolkitSlug,
+    auth_config_id: authConfigId,
+    status
+  });
+  return getComposioAccountById(id);
+}
+
+export function listComposioAccounts({ userId, toolkitSlug }) {
+  initDb();
+  if (!userId || !toolkitSlug) return [];
+  return db.prepare(`
+    SELECT *
+    FROM composio_connected_accounts
+    WHERE user_id = ? AND toolkit_slug = ?
+    ORDER BY is_default DESC, updated_at DESC
+  `).all(userId, toolkitSlug);
+}
+
+export function updateComposioAccountLocal({ id, label }) {
+  initDb();
+  if (!id) return null;
+  db.prepare(`
+    UPDATE composio_connected_accounts
+    SET label = ?, updated_at = datetime('now')
+    WHERE id = ?
+  `).run(label ?? null, id);
+  return getComposioAccountById(id);
+}
+
+export function deleteComposioAccountLocal({ id }) {
+  initDb();
+  if (!id) return;
+  db.prepare('DELETE FROM composio_connected_accounts WHERE id = ?').run(id);
+}
+
+export function setDefaultComposioAccount({ userId, toolkitSlug, accountId }) {
+  initDb();
+  if (!userId || !toolkitSlug || !accountId) return null;
+  const tx = db.transaction(() => {
+    db.prepare(`
+      UPDATE composio_connected_accounts
+      SET is_default = 0
+      WHERE user_id = ? AND toolkit_slug = ?
+    `).run(userId, toolkitSlug);
+
+    db.prepare(`
+      UPDATE composio_connected_accounts
+      SET is_default = 1, updated_at = datetime('now')
+      WHERE id = ? AND user_id = ? AND toolkit_slug = ?
+    `).run(accountId, userId, toolkitSlug);
+  });
+  tx();
+  return getComposioAccountById(accountId);
+}
+
+export function getDefaultConnectedAccountsMap({ userId }) {
+  initDb();
+  if (!userId) return {};
+  const rows = db.prepare(`
+    SELECT toolkit_slug, id
+    FROM composio_connected_accounts
+    WHERE user_id = ?
+      AND is_default = 1
+      AND is_disabled = 0
+      AND status = 'ACTIVE'
+  `).all(userId);
+  const map = {};
+  rows.forEach(row => {
+    map[row.toolkit_slug] = row.id;
+  });
+  return map;
+}
+
+export function getComposioToolkitStats({ userId }) {
+  initDb();
+  if (!userId) return new Map();
+  const rows = db.prepare(`
+    SELECT
+      toolkit_slug as toolkitSlug,
+      SUM(CASE WHEN status = 'ACTIVE' AND is_disabled = 0 THEN 1 ELSE 0 END) as connectedCount,
+      MAX(CASE WHEN is_default = 1 THEN id ELSE NULL END) as defaultAccountId
+    FROM composio_connected_accounts
+    WHERE user_id = ?
+    GROUP BY toolkit_slug
+  `).all(userId);
+  const map = new Map();
+  rows.forEach(row => {
+    map.set(row.toolkitSlug, {
+      connectedCount: Number(row.connectedCount) || 0,
+      defaultAccountId: row.defaultAccountId || null
+    });
+  });
+  return map;
 }

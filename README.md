@@ -81,9 +81,11 @@ This includes:
   - text-only in v1 (no vision/OCR)
   - attachments are kept **in-memory only** for the unsent message
 
-### Integrations: Composio Live Catalog
-- Integrations page loads a **live list from Composio** (cached server-side).
-- Includes a **tool-router playground** to quickly validate prompts/tools.
+### Integrations: Native Composio Connections (In‑App)
+- Loads a **live toolkit catalog from Composio** (cached server-side).
+- **Connect accounts in-app** (dedicated Electron OAuth window; no external browser).
+- Supports **multiple accounts per integration** with a **default account** selector.
+- Includes **Recipes** + a **tool-router Playground** scoped to the selected integration.
 
 ### Automations: Templates + Run History
 - Templates prefill the builder.
@@ -127,4 +129,3 @@ OpenClawd is intentionally “Beta” because adapters/browser mode may require 
 ├── server/           # Express backend + providers + SQLite
 └── clawd/            # OpenClawd gateway (Beta)
 ```
-

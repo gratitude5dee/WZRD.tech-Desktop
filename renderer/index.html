@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>WZRD.tech</title>
   <link rel="stylesheet" href="style.css">
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
   <div class="intro-overlay" id="introOverlay" aria-hidden="true">
@@ -478,33 +477,131 @@
         <div class="view-header">
           <div>
             <h2>Integrations</h2>
-            <p class="view-subtitle">Connect your workspace to the tools you already use.</p>
+            <p class="view-subtitle">Connect accounts in-app and run native recipes.</p>
           </div>
           <div class="header-actions">
-            <button class="ghost-btn" id="integrationRefreshBtn">Refresh</button>
-            <button class="primary-btn" id="openComposioBtn">Open Composio</button>
+            <button class="ghost-btn" id="integrationsRefreshBtn">Refresh</button>
           </div>
         </div>
-        <div class="glass-panel composio-playground" id="composioPlayground">
-          <div class="section-title">Tool Router Playground</div>
-          <div class="form-row">
-            <div class="form-field">
-              <label for="composioPlaygroundUserId">External user id (optional)</label>
-              <input type="text" id="composioPlaygroundUserId" placeholder="default-user">
+
+        <div class="glass-panel integrations-toolbar">
+          <div class="toolbar-left">
+            <div class="search-field">
+              <input type="text" id="integrationsSearchInput" placeholder="Search integrations">
+            </div>
+            <div class="segmented" id="integrationsFilter">
+              <button class="segmented-btn active" data-filter="all">All</button>
+              <button class="segmented-btn" data-filter="featured">Featured</button>
+              <button class="segmented-btn" data-filter="connected">Connected</button>
             </div>
           </div>
-          <div class="form-field">
-            <label for="composioPlaygroundPrompt">Prompt</label>
-            <textarea id="composioPlaygroundPrompt" rows="3" placeholder="Send an email to ..."></textarea>
+          <div class="toolbar-right">
+            <span class="status-chip" id="integrationsLiveChip">Live from Composio</span>
           </div>
-          <div class="modal-actions">
-            <button class="accent-btn" id="composioPlaygroundRunBtn">Run</button>
-            <button class="ghost-btn" id="composioPlaygroundCopyBtn">Copy output</button>
-          </div>
-          <div class="settings-status" id="composioPlaygroundStatus"></div>
-          <pre class="playground-output" id="composioPlaygroundOutput"></pre>
         </div>
-        <div class="integrations-grid" id="integrationsGrid"></div>
+
+        <div class="empty-state hidden" id="integrationsMissingKey">
+          <strong>Connect Composio to load integrations.</strong>
+          <div class="empty-subtitle">Add your COMPOSIO_API_KEY in Settings.</div>
+          <button class="primary-btn" id="openSettingsFromIntegrations">Open Settings</button>
+        </div>
+
+        <div class="integrations-section" id="featuredIntegrationsSection">
+          <div class="section-title">Featured</div>
+          <div class="integrations-grid" id="featuredIntegrationsGrid"></div>
+        </div>
+
+        <div class="integrations-section">
+          <div class="section-title-row">
+            <div class="section-title">All integrations</div>
+            <div class="section-meta" id="integrationsCountMeta"></div>
+          </div>
+          <div class="integrations-grid" id="integrationsGrid"></div>
+        </div>
+
+        <!-- Integration Details Drawer -->
+        <div class="drawer-overlay hidden" id="integrationDrawerOverlay" aria-hidden="true">
+          <div class="drawer-scrim" id="integrationDrawerScrim"></div>
+          <div class="drawer-panel glass-panel" role="dialog" aria-modal="true" aria-label="Integration details">
+            <div class="drawer-header">
+              <div class="drawer-header-left">
+                <div class="integration-logo-wrap">
+                  <img class="integration-logo" id="drawerIntegrationLogo" alt="">
+                  <div class="integration-monogram hidden" id="drawerIntegrationMonogram"></div>
+                </div>
+                <div>
+                  <div class="drawer-title" id="drawerIntegrationName">Integration</div>
+                  <div class="drawer-meta" id="drawerIntegrationMeta"></div>
+                  <a class="drawer-link" id="drawerIntegrationWebsite" href="#" target="_blank" rel="noreferrer">Website</a>
+                </div>
+              </div>
+              <button class="icon-btn" id="closeIntegrationDrawer" title="Close">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+            </div>
+
+            <div class="drawer-tabs" id="integrationDrawerTabs">
+              <button class="tab-btn active" data-tab="accounts">Accounts</button>
+              <button class="tab-btn" data-tab="recipes">Recipes</button>
+              <button class="tab-btn" data-tab="playground">Playground</button>
+            </div>
+
+            <div class="drawer-body">
+              <div class="drawer-tab active" id="integrationTabAccounts">
+                <div class="drawer-toolbar">
+                  <div class="drawer-toolbar-title">Connected accounts</div>
+                  <button class="accent-btn" id="addIntegrationAccountBtn">Add account</button>
+                </div>
+                <div class="settings-status" id="integrationAccountsStatus"></div>
+                <div class="accounts-list" id="integrationAccountsList"></div>
+              </div>
+
+              <div class="drawer-tab" id="integrationTabRecipes">
+                <div class="recipes-grid" id="integrationRecipesGrid"></div>
+              </div>
+
+              <div class="drawer-tab" id="integrationTabPlayground">
+                <div class="form-field">
+                  <label for="integrationPlaygroundPrompt">Prompt</label>
+                  <textarea id="integrationPlaygroundPrompt" rows="4" placeholder="Send an email to …"></textarea>
+                </div>
+                <div class="modal-actions">
+                  <button class="accent-btn" id="integrationPlaygroundRunBtn">Run</button>
+                  <button class="ghost-btn" id="integrationPlaygroundCopyBtn">Copy output</button>
+                </div>
+                <div class="settings-status" id="integrationPlaygroundStatus"></div>
+                <pre class="playground-output" id="integrationPlaygroundOutput"></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Auth Config Picker Sheet -->
+        <div class="sheet-overlay hidden" id="authConfigSheetOverlay" aria-hidden="true">
+          <div class="sheet-scrim" id="authConfigSheetScrim"></div>
+          <div class="sheet-panel glass-panel" role="dialog" aria-modal="true" aria-label="Choose an auth method">
+            <div class="sheet-header">
+              <div>
+                <div class="sheet-title">Connect account</div>
+                <div class="sheet-subtitle">Choose a connection method for this integration.</div>
+              </div>
+              <button class="icon-btn" id="closeAuthConfigSheet" title="Close">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+            </div>
+            <div class="sheet-body" id="authConfigList"></div>
+            <div class="settings-status" id="authConfigSheetStatus"></div>
+            <div class="sheet-actions">
+              <button class="ghost-btn" id="cancelAuthConfigSheet">Cancel</button>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Automations View -->
@@ -1202,6 +1299,7 @@
     </div>
   </div>
 
+  <script src="markdown.js"></script>
   <script src="renderer.js"></script>
 </body>
 </html>

@@ -4,8 +4,18 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
 import dotenv from 'dotenv';
-import { Composio } from '@composio/core';
-import { listComposioIntegrations } from './composio.js';
+import {
+  getComposioClient,
+  listComposioIntegrations,
+  listAuthConfigs,
+  listConnectedAccounts,
+  listAllConnectedAccountsForUser,
+  createConnectLink,
+  waitForConnection,
+  enableConnectedAccount,
+  disableConnectedAccount,
+  deleteConnectedAccount
+} from './composio.js';
 import { getClawdStatus, getClawdConfig, updateClawdConfig, startClawd, stopClawd, getClawdLogs } from './clawd-manager.js';
 import { getProvider, getAvailableProviders, initializeProviders } from './providers/index.js';
 import crypto from 'crypto';
@@ -54,6 +64,16 @@ import {
   listArchivedThreads,
   addArchivedThread,
   deleteArchivedThread
+  ,
+  getComposioAccountById,
+  upsertComposioAccount,
+  upsertComposioConnectionRequest,
+  listComposioAccounts,
+  updateComposioAccountLocal,
+  deleteComposioAccountLocal,
+  setDefaultComposioAccount,
+  getDefaultConnectedAccountsMap,
+  getComposioToolkitStats
 } from './db.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -62,9 +82,7 @@ const __dirname = path.dirname(__filename);
 const app = express();
 let server = null;
 
-let composio = null;
 let composioSessions = new Map();
-let defaultComposioSession = null;
 const automationJobs = new Map();
 
 function loadEnv(envPath = null) {
@@ -77,7 +95,20 @@ function loadEnv(envPath = null) {
 
 function resetComposioState() {
   composioSessions = new Map();
-  defaultComposioSession = null;
+}
+
+function getDefaultComposioUserId() {
+  return process.env.WZRDTECH_EXTERNAL_USER_ID || 'default-user';
+}
+
+function invalidateComposioSession(userId) {
+  if (!userId) return;
+  const prefix = `${userId}::`;
+  for (const key of Array.from(composioSessions.keys())) {
+    if (key === userId || key.startsWith(prefix)) {
+      composioSessions.delete(key);
+    }
+  }
 }
 
 function getOpencodeConfigPath() {
@@ -86,31 +117,52 @@ function getOpencodeConfigPath() {
 
 // Pre-initialize Composio session on startup
 async function initializeComposioSession() {
-  const defaultUserId = 'default-user';
+  const defaultUserId = getDefaultComposioUserId();
   console.log('[COMPOSIO] Pre-initializing session for:', defaultUserId);
   try {
-    if (!composio) {
-      composio = new Composio();
+    if (!process.env.COMPOSIO_API_KEY) {
+      console.log('[COMPOSIO] COMPOSIO_API_KEY missing; skipping session pre-init');
+      return;
     }
-    defaultComposioSession = await composio.create(defaultUserId);
-    composioSessions.set(defaultUserId, defaultComposioSession);
-    console.log('[COMPOSIO] Session ready with MCP URL:', defaultComposioSession.mcp.url);
+
+    const composio = getComposioClient();
+    const connectedAccounts = getDefaultConnectedAccountsMap({ userId: defaultUserId });
+    const session = await composio.create(defaultUserId, {
+      manageConnections: true,
+      connectedAccounts
+    });
+    composioSessions.set(`${defaultUserId}::global`, session);
+    console.log('[COMPOSIO] Session ready with MCP URL:', session.mcp.url);
 
     // Update opencode.json with the MCP config
-    updateOpencodeConfig(defaultComposioSession.mcp.url, defaultComposioSession.mcp.headers);
+    updateOpencodeConfig(session.mcp.url, session.mcp.headers);
     console.log('[OPENCODE] Updated opencode.json with MCP config');
   } catch (error) {
     console.error('[COMPOSIO] Failed to pre-initialize session:', error.message);
   }
 }
 
-async function getOrCreateComposioSession(userId) {
-  let session = composioSessions.get(userId);
+async function getOrCreateComposioSession(
+  userId,
+  { scope = 'global', routerConfig = null, updateOpencode = scope === 'global' } = {}
+) {
+  const cacheKey = `${userId}::${scope}`;
+  let session = composioSessions.get(cacheKey);
   if (session) return session;
-  session = await composio.create(userId);
-  composioSessions.set(userId, session);
-  updateOpencodeConfig(session.mcp.url, session.mcp.headers);
-  console.log('[OPENCODE] Updated opencode.json with MCP config');
+
+  const composio = getComposioClient();
+  const connectedAccounts = getDefaultConnectedAccountsMap({ userId });
+  session = await composio.create(userId, {
+    manageConnections: true,
+    connectedAccounts,
+    ...(routerConfig || {})
+  });
+  composioSessions.set(cacheKey, session);
+
+  if (updateOpencode) {
+    updateOpencodeConfig(session.mcp.url, session.mcp.headers);
+    console.log('[OPENCODE] Updated opencode.json with MCP config');
+  }
   return session;
 }
 
@@ -163,9 +215,17 @@ async function runAutomation(automationId, source = 'manual') {
   const provider = getProvider(providerName);
 
   try {
-    const userId = 'automation-user';
-    const session = await getOrCreateComposioSession(userId);
-    const mcpServers = buildMcpServers(session);
+    const userId = getDefaultComposioUserId();
+    let mcpServers = {};
+    if (process.env.COMPOSIO_API_KEY) {
+      try {
+        const session = await getOrCreateComposioSession(userId);
+        mcpServers = buildMcpServers(session);
+      } catch (err) {
+        console.warn('[COMPOSIO] Automation MCP unavailable; continuing without tools:', err?.message || err);
+        mcpServers = {};
+      }
+    }
     const chatId = `${automation.id}_${Date.now()}`;
 
     let output = '';
@@ -225,7 +285,7 @@ app.post('/api/chat', async (req, res) => {
   const {
     message,
     chatId,
-    userId = 'default-user',
+    userId = getDefaultComposioUserId(),
     provider: providerName = 'claude',  // Per-request provider selection
     model = null,  // Per-request model selection
     attachments = [],
@@ -268,20 +328,22 @@ app.post('/api/chat', async (req, res) => {
   });
 
   try {
-    // Get or create Composio session for this user
-    let composioSession = composioSessions.get(userId);
-    if (!composioSession) {
-      console.log('[COMPOSIO] Creating new session for user:', userId);
-      res.write(`data: ${JSON.stringify({ type: 'status', message: 'Initializing session...' })}\n\n`);
-      composioSession = await getOrCreateComposioSession(userId);
-      console.log('[COMPOSIO] Session created with MCP URL:', composioSession.mcp.url);
-    }
-
     // Get the provider instance
     const provider = getProvider(providerName);
 
-    // Build MCP servers config - passed to provider
-    const mcpServers = buildMcpServers(composioSession);
+    // Build MCP servers config - passed to provider (optional)
+    let mcpServers = {};
+    if (process.env.COMPOSIO_API_KEY) {
+      try {
+        console.log('[COMPOSIO] Ensuring session for user:', userId);
+        res.write(`data: ${JSON.stringify({ type: 'status', message: 'Initializing tools…' })}\n\n`);
+        const composioSession = await getOrCreateComposioSession(userId);
+        mcpServers = buildMcpServers(composioSession);
+      } catch (err) {
+        console.warn('[COMPOSIO] Session unavailable; continuing without MCP tools:', err?.message || err);
+        mcpServers = {};
+      }
+    }
 
     console.log('[CHAT] Using provider:', provider.name);
     console.log('[CHAT] All stored sessions:', Array.from(provider.sessions.entries()));
@@ -451,9 +513,25 @@ app.get('/api/composio/integrations', async (req, res) => {
   }
   try {
     const force = req.query.refresh === '1';
+    const userId = getDefaultComposioUserId();
+
+    // Best-effort sync: pull all remote connected accounts and upsert into local DB.
+    try {
+      const remoteAccounts = await listAllConnectedAccountsForUser({ userId, limitPerPage: 200, maxPages: 10 });
+      remoteAccounts.forEach((account) => {
+        upsertComposioAccount(account, { userId });
+      });
+    } catch (err) {
+      console.warn('[COMPOSIO] Failed to sync connected accounts:', err?.message || err);
+    }
+
     const list = await listComposioIntegrations({ force });
-    const response = list.map(item => {
-      const saved = upsertIntegration({
+    const stats = getComposioToolkitStats({ userId });
+
+    const response = list.map((item) => {
+      const stat = stats.get(item.id) || { connectedCount: 0, defaultAccountId: null };
+      // Keep integration metadata locally for fast filtering and offline UX improvements.
+      upsertIntegration({
         id: item.id,
         name: item.name,
         category: item.category,
@@ -463,13 +541,254 @@ app.get('/api/composio/integrations', async (req, res) => {
       });
       return {
         ...item,
-        connected: !!saved?.connected,
+        connectedCount: stat.connectedCount,
+        defaultAccountId: stat.defaultAccountId,
         source: 'composio'
       };
     });
+
     res.json(response);
   } catch (error) {
     console.error('[COMPOSIO] Failed to load integrations:', error.message);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.get('/api/composio/auth-configs', async (req, res) => {
+  if (!process.env.COMPOSIO_API_KEY) {
+    return res.status(401).json({ error: 'COMPOSIO_API_KEY not set' });
+  }
+  const toolkitSlug = String(req.query.toolkitSlug || '').trim();
+  const managed = String(req.query.managed || '1') === '1';
+  if (!toolkitSlug) {
+    return res.status(400).json({ error: 'toolkitSlug is required' });
+  }
+  try {
+    const configs = await listAuthConfigs({ toolkitSlug, isComposioManaged: managed, limit: 50 });
+    const out = configs
+      .filter((c) => c.status === 'ENABLED')
+      .map((c) => ({
+        id: c.id,
+        name: c.name,
+        status: c.status,
+        authScheme: c.authScheme || null,
+        isComposioManaged: !!c.isComposioManaged,
+        noOfConnections: c.noOfConnections || 0,
+        toolkit: c.toolkit
+      }));
+    res.json(out);
+  } catch (error) {
+    console.error('[COMPOSIO] Failed to load auth configs:', error.message);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.get('/api/composio/accounts', async (req, res) => {
+  if (!process.env.COMPOSIO_API_KEY) {
+    return res.status(401).json({ error: 'COMPOSIO_API_KEY not set' });
+  }
+  const toolkitSlug = String(req.query.toolkitSlug || '').trim();
+  if (!toolkitSlug) {
+    return res.status(400).json({ error: 'toolkitSlug is required' });
+  }
+  const userId = getDefaultComposioUserId();
+  try {
+    const remote = await listConnectedAccounts({ userId, toolkitSlug, limit: 200 });
+    (remote?.items || []).forEach((account) => {
+      upsertComposioAccount(account, { userId });
+    });
+    const local = listComposioAccounts({ userId, toolkitSlug }).map((row) => ({
+      ...row,
+      state: row.state_json ? JSON.parse(row.state_json) : null
+    }));
+    res.json(local);
+  } catch (error) {
+    console.error('[COMPOSIO] Failed to load accounts:', error.message);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/composio/accounts/link', async (req, res) => {
+  if (!process.env.COMPOSIO_API_KEY) {
+    return res.status(401).json({ error: 'COMPOSIO_API_KEY not set' });
+  }
+  const { toolkitSlug, authConfigId, callbackUrl } = req.body || {};
+  if (!toolkitSlug) {
+    return res.status(400).json({ error: 'toolkitSlug is required' });
+  }
+  const userId = getDefaultComposioUserId();
+  try {
+    let selectedAuthConfigId = authConfigId || null;
+    if (!selectedAuthConfigId) {
+      const managed = await listAuthConfigs({ toolkitSlug, isComposioManaged: true, limit: 20 });
+      selectedAuthConfigId = managed?.[0]?.id || null;
+      if (!selectedAuthConfigId) {
+        const unmanaged = await listAuthConfigs({ toolkitSlug, isComposioManaged: false, limit: 20 });
+        selectedAuthConfigId = unmanaged?.[0]?.id || null;
+      }
+    }
+    if (!selectedAuthConfigId) {
+      return res.status(404).json({ error: 'No enabled auth configs available for this integration' });
+    }
+
+    const link = await createConnectLink({ userId, authConfigId: selectedAuthConfigId, callbackUrl: callbackUrl || null });
+    const connectedAccountId = link?.id;
+    const redirectUrl = link?.redirectUrl;
+
+    if (!connectedAccountId || !redirectUrl) {
+      return res.status(500).json({ error: 'Failed to create connect link' });
+    }
+
+    upsertComposioConnectionRequest({
+      id: connectedAccountId,
+      userId,
+      toolkitSlug,
+      authConfigId: selectedAuthConfigId,
+      status: 'INITIATED'
+    });
+
+    addActivity({
+      type: 'composio',
+      title: `Connecting ${toolkitSlug}`,
+      detail: `Auth config: ${selectedAuthConfigId}`
+    });
+
+    res.json({ connectedAccountId, redirectUrl });
+  } catch (error) {
+    console.error('[COMPOSIO] Failed to create connect link:', error.message);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/composio/accounts/wait', async (req, res) => {
+  if (!process.env.COMPOSIO_API_KEY) {
+    return res.status(401).json({ error: 'COMPOSIO_API_KEY not set' });
+  }
+  const { connectedAccountId, timeoutMs } = req.body || {};
+  if (!connectedAccountId) {
+    return res.status(400).json({ error: 'connectedAccountId is required' });
+  }
+  const userId = getDefaultComposioUserId();
+  try {
+    const account = await waitForConnection({ connectedAccountId, timeoutMs: timeoutMs || 120000 });
+    const row = upsertComposioAccount(account, { userId });
+
+    // If no default exists for this toolkit, promote the first ACTIVE account.
+    if (row?.toolkit_slug && row?.status === 'ACTIVE' && !row?.is_disabled) {
+      const defaults = getDefaultConnectedAccountsMap({ userId });
+      if (!defaults[row.toolkit_slug]) {
+        setDefaultComposioAccount({ userId, toolkitSlug: row.toolkit_slug, accountId: row.id });
+        invalidateComposioSession(userId);
+        addActivity({
+          type: 'composio',
+          title: `Default account set for ${row.toolkit_slug}`,
+          detail: row.id
+        });
+      }
+    }
+
+    addActivity({
+      type: 'composio',
+      title: `Connected ${row?.toolkit_slug || 'integration'}`,
+      detail: row?.id || connectedAccountId
+    });
+
+    res.json({
+      ...row,
+      state: row?.state_json ? JSON.parse(row.state_json) : null
+    });
+  } catch (error) {
+    console.error('[COMPOSIO] Failed to wait for connection:', error.message);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/composio/accounts/:id/enable', async (req, res) => {
+  if (!process.env.COMPOSIO_API_KEY) {
+    return res.status(401).json({ error: 'COMPOSIO_API_KEY not set' });
+  }
+  const { id } = req.params;
+  const userId = getDefaultComposioUserId();
+  try {
+    const account = await enableConnectedAccount(id);
+    const row = upsertComposioAccount(account, { userId });
+    invalidateComposioSession(userId);
+    addActivity({ type: 'composio', title: `Enabled account`, detail: id });
+    res.json({ ...row, state: row?.state_json ? JSON.parse(row.state_json) : null });
+  } catch (error) {
+    console.error('[COMPOSIO] Failed to enable account:', error.message);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/composio/accounts/:id/disable', async (req, res) => {
+  if (!process.env.COMPOSIO_API_KEY) {
+    return res.status(401).json({ error: 'COMPOSIO_API_KEY not set' });
+  }
+  const { id } = req.params;
+  const userId = getDefaultComposioUserId();
+  try {
+    const account = await disableConnectedAccount(id);
+    const row = upsertComposioAccount(account, { userId });
+    invalidateComposioSession(userId);
+    addActivity({ type: 'composio', title: `Disabled account`, detail: id });
+    res.json({ ...row, state: row?.state_json ? JSON.parse(row.state_json) : null });
+  } catch (error) {
+    console.error('[COMPOSIO] Failed to disable account:', error.message);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.delete('/api/composio/accounts/:id', async (req, res) => {
+  if (!process.env.COMPOSIO_API_KEY) {
+    return res.status(401).json({ error: 'COMPOSIO_API_KEY not set' });
+  }
+  const { id } = req.params;
+  const userId = getDefaultComposioUserId();
+  try {
+    await deleteConnectedAccount(id);
+    deleteComposioAccountLocal({ id });
+    invalidateComposioSession(userId);
+    addActivity({ type: 'composio', title: `Deleted account`, detail: id });
+    res.json({ success: true });
+  } catch (error) {
+    console.error('[COMPOSIO] Failed to delete account:', error.message);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.patch('/api/composio/accounts/:id', async (req, res) => {
+  if (!process.env.COMPOSIO_API_KEY) {
+    return res.status(401).json({ error: 'COMPOSIO_API_KEY not set' });
+  }
+  const { id } = req.params;
+  const { label, isDefault } = req.body || {};
+  const userId = getDefaultComposioUserId();
+  try {
+    let row = getComposioAccountById(id);
+    if (!row) {
+      // Try to fetch from Composio if not present locally.
+      const account = await getComposioClient().connectedAccounts.get(id);
+      row = upsertComposioAccount(account, { userId });
+    }
+
+    if (typeof label === 'string') {
+      row = updateComposioAccountLocal({ id, label: label.trim() });
+    }
+
+    if (isDefault) {
+      const toolkitSlug = row?.toolkit_slug;
+      if (!toolkitSlug) {
+        return res.status(400).json({ error: 'Unable to determine toolkit for this account' });
+      }
+      row = setDefaultComposioAccount({ userId, toolkitSlug, accountId: id });
+      invalidateComposioSession(userId);
+      addActivity({ type: 'composio', title: `Default account changed`, detail: `${toolkitSlug} → ${id}` });
+    }
+
+    res.json({ ...row, state: row?.state_json ? JSON.parse(row.state_json) : null });
+  } catch (error) {
+    console.error('[COMPOSIO] Failed to update account:', error.message);
     res.status(500).json({ error: error.message });
   }
 });
@@ -478,13 +797,15 @@ app.post('/api/composio/test', async (req, res) => {
   if (!process.env.COMPOSIO_API_KEY) {
     return res.status(401).json({ error: 'COMPOSIO_API_KEY not set' });
   }
-  const { prompt, externalUserId } = req.body || {};
+  const { prompt, externalUserId, toolkitSlug } = req.body || {};
   if (!prompt) {
     return res.status(400).json({ error: 'prompt is required' });
   }
   try {
-    const userId = externalUserId || 'default-user';
-    const session = await getOrCreateComposioSession(userId);
+    const userId = externalUserId || getDefaultComposioUserId();
+    const routerConfig = toolkitSlug ? { toolkits: { enable: [toolkitSlug] } } : null;
+    const scope = toolkitSlug ? `toolkit_${toolkitSlug}` : 'global';
+    const session = await getOrCreateComposioSession(userId, { scope, routerConfig });
     const mcpServers = buildMcpServers(session);
 
     const provider = getProvider('claude');
@@ -878,7 +1199,6 @@ export async function startServer({ port = 3001, envPath = null } = {}) {
 
   loadEnv(envPath);
   resetComposioState();
-  composio = new Composio();
 
   await initializeProviders();
   await initializeComposioSession();

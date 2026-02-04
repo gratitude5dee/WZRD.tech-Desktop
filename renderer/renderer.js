@@ -50,14 +50,47 @@ const actionChips = document.querySelectorAll('.action-chip');
 
 // Integrations
 const integrationsGrid = document.getElementById('integrationsGrid');
-const openComposioBtn = document.getElementById('openComposioBtn');
-const integrationRefreshBtn = document.getElementById('integrationRefreshBtn');
-const composioPlaygroundUserId = document.getElementById('composioPlaygroundUserId');
-const composioPlaygroundPrompt = document.getElementById('composioPlaygroundPrompt');
-const composioPlaygroundRunBtn = document.getElementById('composioPlaygroundRunBtn');
-const composioPlaygroundCopyBtn = document.getElementById('composioPlaygroundCopyBtn');
-const composioPlaygroundStatus = document.getElementById('composioPlaygroundStatus');
-const composioPlaygroundOutput = document.getElementById('composioPlaygroundOutput');
+const featuredIntegrationsGrid = document.getElementById('featuredIntegrationsGrid');
+const featuredIntegrationsSection = document.getElementById('featuredIntegrationsSection');
+const integrationsMissingKey = document.getElementById('integrationsMissingKey');
+const openSettingsFromIntegrations = document.getElementById('openSettingsFromIntegrations');
+const integrationsRefreshBtn = document.getElementById('integrationsRefreshBtn');
+const integrationsSearchInput = document.getElementById('integrationsSearchInput');
+const integrationsFilter = document.getElementById('integrationsFilter');
+const integrationsCountMeta = document.getElementById('integrationsCountMeta');
+
+const integrationDrawerOverlay = document.getElementById('integrationDrawerOverlay');
+const integrationDrawerScrim = document.getElementById('integrationDrawerScrim');
+const drawerIntegrationLogo = document.getElementById('drawerIntegrationLogo');
+const drawerIntegrationMonogram = document.getElementById('drawerIntegrationMonogram');
+const drawerIntegrationName = document.getElementById('drawerIntegrationName');
+const drawerIntegrationMeta = document.getElementById('drawerIntegrationMeta');
+const drawerIntegrationWebsite = document.getElementById('drawerIntegrationWebsite');
+const closeIntegrationDrawer = document.getElementById('closeIntegrationDrawer');
+const integrationDrawerTabs = document.getElementById('integrationDrawerTabs');
+
+const integrationTabAccounts = document.getElementById('integrationTabAccounts');
+const integrationTabRecipes = document.getElementById('integrationTabRecipes');
+const integrationTabPlayground = document.getElementById('integrationTabPlayground');
+
+const addIntegrationAccountBtn = document.getElementById('addIntegrationAccountBtn');
+const integrationAccountsStatus = document.getElementById('integrationAccountsStatus');
+const integrationAccountsList = document.getElementById('integrationAccountsList');
+
+const integrationRecipesGrid = document.getElementById('integrationRecipesGrid');
+
+const integrationPlaygroundPrompt = document.getElementById('integrationPlaygroundPrompt');
+const integrationPlaygroundRunBtn = document.getElementById('integrationPlaygroundRunBtn');
+const integrationPlaygroundCopyBtn = document.getElementById('integrationPlaygroundCopyBtn');
+const integrationPlaygroundStatus = document.getElementById('integrationPlaygroundStatus');
+const integrationPlaygroundOutput = document.getElementById('integrationPlaygroundOutput');
+
+const authConfigSheetOverlay = document.getElementById('authConfigSheetOverlay');
+const authConfigSheetScrim = document.getElementById('authConfigSheetScrim');
+const authConfigList = document.getElementById('authConfigList');
+const authConfigSheetStatus = document.getElementById('authConfigSheetStatus');
+const closeAuthConfigSheet = document.getElementById('closeAuthConfigSheet');
+const cancelAuthConfigSheet = document.getElementById('cancelAuthConfigSheet');
 
 // Automations
 const automationsList = document.getElementById('automationsList');
@@ -249,6 +282,12 @@ let currentChatId = null;
 // Workspace view state
 let currentView = 'dashboard';
 let integrationsCache = [];
+let integrationsComposioMissingKey = false;
+let selectedIntegration = null;
+let selectedIntegrationAccounts = [];
+let selectedIntegrationTab = 'accounts';
+let authConfigToolkitSlug = null;
+let authWindowId = null;
 let automationsCache = [];
 let memoryCache = [];
 let activityCache = [];
@@ -824,21 +863,52 @@ function setupEventListeners() {
     skillsSearch.addEventListener('input', () => renderSkills());
   }
 
-  // Composio playground
-  if (composioPlaygroundRunBtn) composioPlaygroundRunBtn.addEventListener('click', runComposioPlayground);
-  if (composioPlaygroundCopyBtn) {
-    composioPlaygroundCopyBtn.addEventListener('click', async () => {
-      const text = composioPlaygroundOutput?.textContent || '';
+  // Integrations v2
+  if (integrationsRefreshBtn) integrationsRefreshBtn.addEventListener('click', () => loadIntegrations(true));
+  if (openSettingsFromIntegrations) openSettingsFromIntegrations.addEventListener('click', () => setActiveView('settings'));
+  if (integrationsSearchInput) {
+    integrationsSearchInput.addEventListener('input', () => renderIntegrations());
+  }
+  if (integrationsFilter) {
+    integrationsFilter.querySelectorAll('.segmented-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        integrationsFilter.querySelectorAll('.segmented-btn').forEach((b) => b.classList.remove('active'));
+        btn.classList.add('active');
+        renderIntegrations();
+      });
+    });
+  }
+
+  if (closeIntegrationDrawer) closeIntegrationDrawer.addEventListener('click', closeIntegrationDetails);
+  if (integrationDrawerScrim) integrationDrawerScrim.addEventListener('click', closeIntegrationDetails);
+  if (integrationDrawerTabs) {
+    integrationDrawerTabs.querySelectorAll('.tab-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        setIntegrationDrawerTab(btn.dataset.tab || 'accounts');
+      });
+    });
+  }
+
+  if (addIntegrationAccountBtn) addIntegrationAccountBtn.addEventListener('click', openAuthConfigSheet);
+
+  if (integrationPlaygroundRunBtn) integrationPlaygroundRunBtn.addEventListener('click', runIntegrationPlayground);
+  if (integrationPlaygroundCopyBtn) {
+    integrationPlaygroundCopyBtn.addEventListener('click', async () => {
+      const text = integrationPlaygroundOutput?.textContent || '';
       if (!text) return;
       try {
         await navigator.clipboard.writeText(text);
-        setComposioPlaygroundStatus('Copied output.', 'success');
-        setTimeout(() => setComposioPlaygroundStatus(''), 1200);
+        setIntegrationPlaygroundStatus('Copied output.', 'success');
+        setTimeout(() => setIntegrationPlaygroundStatus(''), 1200);
       } catch (_err) {
-        setComposioPlaygroundStatus('Copy failed.', 'error');
+        setIntegrationPlaygroundStatus('Copy failed.', 'error');
       }
     });
   }
+
+  if (closeAuthConfigSheet) closeAuthConfigSheet.addEventListener('click', closeAuthConfigSheetOverlay);
+  if (cancelAuthConfigSheet) cancelAuthConfigSheet.addEventListener('click', closeAuthConfigSheetOverlay);
+  if (authConfigSheetScrim) authConfigSheetScrim.addEventListener('click', closeAuthConfigSheetOverlay);
 
   // OpenClawd
   if (clawdStartBtn) clawdStartBtn.addEventListener('click', handleClawdStart);
@@ -1016,17 +1086,7 @@ function setupNavigation() {
     });
   });
 
-  if (openComposioBtn) {
-    openComposioBtn.addEventListener('click', () => {
-      window.open('https://platform.composio.dev', '_blank');
-    });
-  }
-
-  if (integrationRefreshBtn) {
-    integrationRefreshBtn.addEventListener('click', () => {
-      loadIntegrations(true);
-    });
-  }
+  // Integrations refresh/search are handled in setupEventListeners.
 }
 
 function hideAllViews() {
@@ -1183,10 +1243,22 @@ function setMemoryStatus(message = '', tone = 'neutral') {
   memoryStatus.dataset.tone = tone;
 }
 
-function setComposioPlaygroundStatus(message = '', tone = 'neutral') {
-  if (!composioPlaygroundStatus) return;
-  composioPlaygroundStatus.textContent = message;
-  composioPlaygroundStatus.dataset.tone = tone;
+function setIntegrationAccountsStatus(message = '', tone = 'neutral') {
+  if (!integrationAccountsStatus) return;
+  integrationAccountsStatus.textContent = message;
+  integrationAccountsStatus.dataset.tone = tone;
+}
+
+function setIntegrationPlaygroundStatus(message = '', tone = 'neutral') {
+  if (!integrationPlaygroundStatus) return;
+  integrationPlaygroundStatus.textContent = message;
+  integrationPlaygroundStatus.dataset.tone = tone;
+}
+
+function setAuthConfigSheetStatus(message = '', tone = 'neutral') {
+  if (!authConfigSheetStatus) return;
+  authConfigSheetStatus.textContent = message;
+  authConfigSheetStatus.dataset.tone = tone;
 }
 
 async function loadDashboardData() {
@@ -1241,98 +1313,730 @@ async function loadDashboardData() {
 }
 
 async function loadIntegrations(refresh = false) {
-  if (!window.electronAPI?.listComposioIntegrations || !integrationsGrid) return;
-  integrationsGrid.innerHTML = '';
+  if (!window.electronAPI?.listComposioIntegrations) return;
   try {
     const response = await window.electronAPI.listComposioIntegrations(refresh);
     if (!response?.ok) {
       if (response?.status === 401) {
-        integrationsGrid.innerHTML = `
-          <div class="empty-state">
-            <strong>Connect Composio to load integrations.</strong>
-            <div class="empty-subtitle">Add your COMPOSIO_API_KEY in Settings.</div>
-            <button class="primary-btn" id="openSettingsFromIntegrations">Open Settings</button>
-          </div>
-        `;
-        const openSettingsBtn = document.getElementById('openSettingsFromIntegrations');
-        openSettingsBtn?.addEventListener('click', () => setActiveView('settings'));
+        integrationsCache = [];
+        integrationsComposioMissingKey = true;
+        renderIntegrations();
         return;
       }
-      integrationsGrid.innerHTML = '<div class="empty-state">Failed to load integrations.</div>';
+      integrationsCache = [];
+      integrationsComposioMissingKey = false;
+      renderIntegrations({ error: response?.data?.error || 'Failed to load integrations.' });
       return;
     }
 
     integrationsCache = response.data || [];
-    integrationsCache.forEach(item => {
-      const card = document.createElement('div');
-      card.className = 'integration-card glass-panel';
-      card.innerHTML = `
-        <div class="integration-header">
-          <div>
-            <div class="integration-title">${item.name}</div>
-            <div class="integration-meta">${item.category}</div>
-            <div class="integration-meta">Live from Composio</div>
-          </div>
-          <div class="integration-icon">${item.icon || '✨'}</div>
-        </div>
-        <div class="integration-desc">${item.description || 'No description provided.'}</div>
-        <div class="integration-actions">
-          <span class="integration-meta">${item.connected ? 'Connected' : 'Not connected'}</span>
-          <button class="accent-btn">${item.connected ? 'Disconnect' : 'Connect'}</button>
-        </div>
-      `;
-      const button = card.querySelector('button');
-      button.addEventListener('click', async () => {
-        const updated = await window.electronAPI.updateIntegration(item.id, !item.connected);
-        if (updated?.connected) {
-          window.open('https://platform.composio.dev', '_blank');
-        }
-        loadIntegrations();
-        loadDashboardData();
-      });
-      integrationsGrid.appendChild(card);
-    });
+    integrationsComposioMissingKey = false;
+    renderIntegrations();
+    loadDashboardData();
   } catch (err) {
     console.error('[INTEGRATIONS] Failed:', err);
-    integrationsGrid.innerHTML = '<div class="empty-state">Failed to load integrations.</div>';
+    integrationsCache = [];
+    integrationsComposioMissingKey = false;
+    renderIntegrations({ error: 'Failed to load integrations.' });
   }
 }
 
-async function runComposioPlayground() {
-  if (!window.electronAPI?.runComposioTest) return;
-  const prompt = composioPlaygroundPrompt?.value?.trim() || '';
-  if (!prompt) {
-    setComposioPlaygroundStatus('Enter a prompt.', 'error');
+function getIntegrationsActiveFilter() {
+  const active = integrationsFilter?.querySelector('.segmented-btn.active');
+  return active?.dataset?.filter || 'all';
+}
+
+function canon(str) {
+  return String(str || '').toLowerCase().replace(/[^a-z0-9]+/g, '');
+}
+
+const FEATURED_CANONICAL = [
+  'gmail',
+  'googlecalendar',
+  'googledrive',
+  'slack',
+  'github',
+  'notion',
+  'linear',
+  'jira',
+  'figma',
+  'hubspot'
+];
+
+function getIntegrationCanonicalKey(item) {
+  const slugKey = canon(item?.slug || item?.id || '');
+  const nameKey = canon(item?.name || '');
+  const hit = FEATURED_CANONICAL.find((k) => k === slugKey || k === nameKey);
+  return hit || slugKey || nameKey || 'integration';
+}
+
+function isFeaturedIntegration(item) {
+  return FEATURED_CANONICAL.includes(getIntegrationCanonicalKey(item));
+}
+
+function getMonogram(name) {
+  const words = String(name || '').trim().split(/\s+/).filter(Boolean);
+  if (words.length === 0) return '•';
+  const first = words[0][0] || '';
+  const second = (words[1]?.[0] || words[0]?.[1] || '') || '';
+  return (first + second).toUpperCase();
+}
+
+function hashHue(input) {
+  const str = String(input || '');
+  let hash = 0;
+  for (let i = 0; i < str.length; i += 1) {
+    hash = (hash * 31 + str.charCodeAt(i)) >>> 0;
+  }
+  return hash % 360;
+}
+
+function renderIntegrationCard(item) {
+  const card = document.createElement('button');
+  card.type = 'button';
+  card.className = 'integration-card glass-panel';
+  card.setAttribute('aria-label', `Manage ${item.name}`);
+
+  const connectedCount = Number(item.connectedCount) || 0;
+  const statusText = connectedCount > 0 ? `Connected (${connectedCount})` : 'Not connected';
+
+  const logoWrap = document.createElement('div');
+  logoWrap.className = 'integration-logo-wrap';
+
+  const img = document.createElement('img');
+  img.className = 'integration-card-logo';
+  img.alt = '';
+  img.loading = 'lazy';
+  img.decoding = 'async';
+  img.referrerPolicy = 'no-referrer';
+
+  const monogram = document.createElement('div');
+  monogram.className = 'integration-monogram';
+  monogram.textContent = getMonogram(item.name);
+  const hue = hashHue(item.id || item.name);
+  monogram.style.background = `linear-gradient(135deg, hsla(${hue}, 95%, 60%, 0.22), hsla(${(hue + 48) % 360}, 95%, 55%, 0.16))`;
+
+  const iconUrl = String(item.icon || '').trim();
+  if (iconUrl && /^https:\/\//i.test(iconUrl)) {
+    img.src = iconUrl;
+    img.addEventListener('error', () => {
+      img.style.display = 'none';
+      monogram.classList.remove('hidden');
+    });
+    logoWrap.appendChild(img);
+    monogram.classList.add('hidden');
+    logoWrap.appendChild(monogram);
+  } else {
+    logoWrap.appendChild(monogram);
+  }
+
+  const content = document.createElement('div');
+  content.className = 'integration-card-body';
+
+  const title = document.createElement('div');
+  title.className = 'integration-title';
+  title.textContent = item.name;
+
+  const meta = document.createElement('div');
+  meta.className = 'integration-meta';
+  meta.textContent = item.category || 'General';
+
+  const desc = document.createElement('div');
+  desc.className = 'integration-desc';
+  desc.textContent = item.description || 'No description provided.';
+
+  const footer = document.createElement('div');
+  footer.className = 'integration-actions';
+
+  const chip = document.createElement('span');
+  chip.className = `integration-chip ${connectedCount > 0 ? 'chip-good' : 'chip-muted'}`;
+  chip.textContent = statusText;
+
+  const cta = document.createElement('span');
+  cta.className = 'integration-cta';
+  cta.textContent = 'Manage';
+
+  footer.appendChild(chip);
+  footer.appendChild(cta);
+
+  content.appendChild(title);
+  content.appendChild(meta);
+  content.appendChild(desc);
+  content.appendChild(footer);
+
+  card.appendChild(logoWrap);
+  card.appendChild(content);
+
+  card.addEventListener('click', () => openIntegrationDetails(item));
+  return card;
+}
+
+function renderIntegrations({ error = null } = {}) {
+  if (!integrationsGrid) return;
+
+  // Missing key state
+  if (integrationsMissingKey) {
+    integrationsMissingKey.classList.toggle('hidden', !integrationsComposioMissingKey);
+  }
+  const showData = !integrationsComposioMissingKey;
+
+  if (featuredIntegrationsSection) featuredIntegrationsSection.classList.toggle('hidden', !showData);
+  if (integrationsGrid) integrationsGrid.classList.toggle('hidden', !showData);
+  if (featuredIntegrationsGrid) featuredIntegrationsGrid.classList.toggle('hidden', !showData);
+
+  if (!showData) {
+    if (integrationsGrid) integrationsGrid.innerHTML = '';
+    if (featuredIntegrationsGrid) featuredIntegrationsGrid.innerHTML = '';
+    if (integrationsCountMeta) integrationsCountMeta.textContent = '';
     return;
   }
 
-  const externalUserId = composioPlaygroundUserId?.value?.trim() || null;
-  setComposioPlaygroundStatus('Running...', 'neutral');
-  if (composioPlaygroundOutput) composioPlaygroundOutput.textContent = '';
+  const query = String(integrationsSearchInput?.value || '').trim().toLowerCase();
+  const filter = getIntegrationsActiveFilter();
 
-  try {
-    const result = await window.electronAPI.runComposioTest(prompt, externalUserId);
-    if (!result?.ok) {
-      if (result?.status === 401) {
-        setComposioPlaygroundStatus('COMPOSIO_API_KEY missing. Add it in Settings.', 'error');
-        if (composioPlaygroundOutput) {
-          composioPlaygroundOutput.textContent = 'Missing COMPOSIO_API_KEY.';
-        }
-        return;
-      }
-      const error = result?.data?.error || 'Tool router failed.';
-      setComposioPlaygroundStatus(error, 'error');
-      if (composioPlaygroundOutput) composioPlaygroundOutput.textContent = String(error);
-      return;
+  const list = Array.isArray(integrationsCache) ? integrationsCache.slice() : [];
+
+  const matchesQuery = (item) => {
+    if (!query) return true;
+    const hay = `${item?.name || ''} ${item?.category || ''} ${item?.description || ''} ${item?.id || ''}`.toLowerCase();
+    return hay.includes(query);
+  };
+
+  const connectedOnly = (item) => (Number(item?.connectedCount) || 0) > 0;
+
+  // Featured section
+  if (featuredIntegrationsGrid) {
+    featuredIntegrationsGrid.innerHTML = '';
+    const featured = list
+      .filter(isFeaturedIntegration)
+      .filter(matchesQuery)
+      .sort((a, b) => {
+        const ak = getIntegrationCanonicalKey(a);
+        const bk = getIntegrationCanonicalKey(b);
+        const ai = FEATURED_CANONICAL.indexOf(ak);
+        const bi = FEATURED_CANONICAL.indexOf(bk);
+        if (ai !== bi) return ai - bi;
+        return String(a.name).localeCompare(String(b.name));
+      });
+
+    if (filter === 'connected') {
+      if (featuredIntegrationsSection) featuredIntegrationsSection.classList.add('hidden');
+    } else if (filter === 'featured') {
+      if (featuredIntegrationsSection) featuredIntegrationsSection.classList.remove('hidden');
+    } else {
+      if (featuredIntegrationsSection) featuredIntegrationsSection.classList.remove('hidden');
     }
 
-    const message = result?.data?.message || '';
-    if (composioPlaygroundOutput) composioPlaygroundOutput.textContent = message;
-    setComposioPlaygroundStatus('Completed.', 'success');
-  } catch (err) {
-    console.error('[COMPOSIO] Playground failed:', err);
-    setComposioPlaygroundStatus('Tool router failed.', 'error');
+    if (filter !== 'connected') {
+      featured.forEach((item) => featuredIntegrationsGrid.appendChild(renderIntegrationCard(item)));
+      if (featured.length === 0) {
+        featuredIntegrationsGrid.innerHTML = '<div class="empty-state">No featured integrations match your search.</div>';
+      }
+    }
   }
+
+  // All section
+  integrationsGrid.innerHTML = '';
+  if (integrationsCountMeta) integrationsCountMeta.textContent = '';
+
+  if (error) {
+    integrationsGrid.innerHTML = `<div class="empty-state">${escapeHtml(error)}</div>`;
+    return;
+  }
+
+  let allList = list.filter(matchesQuery);
+  if (filter === 'connected') {
+    allList = allList.filter(connectedOnly).sort((a, b) => {
+      const ac = Number(a.connectedCount) || 0;
+      const bc = Number(b.connectedCount) || 0;
+      if (ac !== bc) return bc - ac;
+      return String(a.name).localeCompare(String(b.name));
+    });
+  } else if (filter === 'featured') {
+    // Hide the all list; the featured list is the primary surface.
+    allList = [];
+  } else {
+    // Avoid duplicates when showing Featured section.
+    allList = allList.filter((i) => !isFeaturedIntegration(i)).sort((a, b) => String(a.name).localeCompare(String(b.name)));
+  }
+
+  if (filter === 'featured') {
+    integrationsGrid.innerHTML = '';
+    if (integrationsCountMeta) integrationsCountMeta.textContent = '';
+    return;
+  }
+
+  if (integrationsCountMeta) {
+    const total = allList.length;
+    integrationsCountMeta.textContent = total > 0 ? `${total} shown` : '';
+  }
+
+  if (allList.length === 0) {
+    integrationsGrid.innerHTML = '<div class="empty-state">No integrations match your filters.</div>';
+    return;
+  }
+
+  allList.forEach((item) => integrationsGrid.appendChild(renderIntegrationCard(item)));
+}
+
+function openIntegrationDetails(item) {
+  if (!integrationDrawerOverlay) return;
+  selectedIntegration = item;
+  selectedIntegrationTab = 'accounts';
+
+  if (drawerIntegrationName) drawerIntegrationName.textContent = item?.name || 'Integration';
+  if (drawerIntegrationMeta) {
+    const count = Number(item?.connectedCount) || 0;
+    drawerIntegrationMeta.textContent = `${item?.category || 'General'} • ${count > 0 ? `Connected (${count})` : 'Not connected'}`;
+  }
+  if (drawerIntegrationWebsite) {
+    const url = String(item?.website || '').trim();
+    if (url && /^https:\/\//i.test(url)) {
+      drawerIntegrationWebsite.href = url;
+      drawerIntegrationWebsite.classList.remove('hidden');
+    } else {
+      drawerIntegrationWebsite.href = '#';
+      drawerIntegrationWebsite.classList.add('hidden');
+    }
+  }
+
+  const iconUrl = String(item?.icon || '').trim();
+  if (drawerIntegrationLogo && drawerIntegrationMonogram) {
+    if (iconUrl && /^https:\/\//i.test(iconUrl)) {
+      drawerIntegrationLogo.src = iconUrl;
+      drawerIntegrationLogo.style.display = '';
+      drawerIntegrationLogo.addEventListener(
+        'error',
+        () => {
+          drawerIntegrationLogo.style.display = 'none';
+          drawerIntegrationMonogram.classList.remove('hidden');
+          drawerIntegrationMonogram.textContent = getMonogram(item?.name);
+        },
+        { once: true }
+      );
+      drawerIntegrationMonogram.classList.add('hidden');
+      drawerIntegrationMonogram.textContent = getMonogram(item?.name);
+    } else {
+      drawerIntegrationLogo.style.display = 'none';
+      drawerIntegrationMonogram.classList.remove('hidden');
+      drawerIntegrationMonogram.textContent = getMonogram(item?.name);
+    }
+  }
+
+  integrationDrawerOverlay.classList.remove('hidden');
+  integrationDrawerOverlay.setAttribute('aria-hidden', 'false');
+
+  setIntegrationDrawerTab('accounts');
+  loadIntegrationAccounts();
+  renderIntegrationRecipes();
+  clearIntegrationPlayground();
+}
+
+function closeIntegrationDetails() {
+  selectedIntegration = null;
+  selectedIntegrationAccounts = [];
+  selectedIntegrationTab = 'accounts';
+  if (integrationDrawerOverlay) {
+    integrationDrawerOverlay.classList.add('hidden');
+    integrationDrawerOverlay.setAttribute('aria-hidden', 'true');
+  }
+  closeAuthConfigSheetOverlay();
+}
+
+function setIntegrationDrawerTab(tab) {
+  selectedIntegrationTab = tab;
+  if (integrationDrawerTabs) {
+    integrationDrawerTabs.querySelectorAll('.tab-btn').forEach((btn) => {
+      btn.classList.toggle('active', btn.dataset.tab === tab);
+    });
+  }
+  [integrationTabAccounts, integrationTabRecipes, integrationTabPlayground].forEach((el) => el?.classList.remove('active'));
+  if (tab === 'accounts') integrationTabAccounts?.classList.add('active');
+  if (tab === 'recipes') integrationTabRecipes?.classList.add('active');
+  if (tab === 'playground') integrationTabPlayground?.classList.add('active');
+}
+
+async function loadIntegrationAccounts() {
+  if (!selectedIntegration?.id) return;
+  if (!window.electronAPI?.listComposioAccounts) return;
+
+  setIntegrationAccountsStatus('Loading…', 'neutral');
+  if (integrationAccountsList) integrationAccountsList.innerHTML = '';
+
+  const result = await window.electronAPI.listComposioAccounts(selectedIntegration.id);
+  if (!result?.ok) {
+    if (result?.status === 401) {
+      setIntegrationAccountsStatus('COMPOSIO_API_KEY missing. Add it in Settings.', 'error');
+      return;
+    }
+    setIntegrationAccountsStatus(result?.data?.error || 'Failed to load accounts.', 'error');
+    return;
+  }
+
+  selectedIntegrationAccounts = Array.isArray(result.data) ? result.data : [];
+  renderIntegrationAccounts();
+  setIntegrationAccountsStatus('', 'neutral');
+}
+
+function formatAccountId(id) {
+  const s = String(id || '');
+  if (s.length <= 14) return s;
+  return `${s.slice(0, 6)}…${s.slice(-6)}`;
+}
+
+function renderIntegrationAccounts() {
+  if (!integrationAccountsList) return;
+  const accounts = Array.isArray(selectedIntegrationAccounts) ? selectedIntegrationAccounts : [];
+  integrationAccountsList.innerHTML = '';
+
+  if (accounts.length === 0) {
+    integrationAccountsList.innerHTML = '<div class="empty-state">No accounts connected yet.</div>';
+    return;
+  }
+
+  accounts.forEach((acc) => {
+    const row = document.createElement('div');
+    row.className = 'account-row';
+
+    const left = document.createElement('div');
+    left.className = 'account-left';
+
+    const labelWrap = document.createElement('div');
+    labelWrap.className = 'account-label-wrap';
+
+    const label = document.createElement('input');
+    label.type = 'text';
+    label.className = 'account-label';
+    label.value = acc.label || '';
+    label.placeholder = 'Account label (optional)';
+
+    const hint = document.createElement('div');
+    hint.className = 'account-hint';
+    hint.textContent = `${acc.status || 'UNKNOWN'} • ${formatAccountId(acc.id)}${acc.is_disabled ? ' • Disabled' : ''}`;
+
+    label.addEventListener('blur', async () => {
+      const next = label.value.trim();
+      if (next === (acc.label || '')) return;
+      await window.electronAPI.updateComposioAccount(acc.id, { label: next });
+      await loadIntegrationAccounts();
+      await loadIntegrations(false);
+    });
+
+    labelWrap.appendChild(label);
+    labelWrap.appendChild(hint);
+
+    const defaultWrap = document.createElement('label');
+    defaultWrap.className = 'account-default';
+    const radio = document.createElement('input');
+    radio.type = 'radio';
+    radio.name = `default_${selectedIntegration.id}`;
+    radio.checked = !!acc.is_default;
+    radio.addEventListener('change', async () => {
+      if (!radio.checked) return;
+      await window.electronAPI.updateComposioAccount(acc.id, { isDefault: true });
+      await loadIntegrationAccounts();
+      await loadIntegrations(false);
+    });
+    const defaultText = document.createElement('span');
+    defaultText.textContent = 'Default';
+    defaultWrap.appendChild(radio);
+    defaultWrap.appendChild(defaultText);
+
+    left.appendChild(labelWrap);
+    left.appendChild(defaultWrap);
+
+    const actions = document.createElement('div');
+    actions.className = 'account-actions';
+
+    const toggleBtn = document.createElement('button');
+    toggleBtn.type = 'button';
+    toggleBtn.className = 'ghost-btn';
+    toggleBtn.textContent = acc.is_disabled ? 'Enable' : 'Disable';
+    toggleBtn.addEventListener('click', async () => {
+      if (acc.is_disabled) {
+        await window.electronAPI.enableComposioAccount(acc.id);
+      } else {
+        await window.electronAPI.disableComposioAccount(acc.id);
+      }
+      await loadIntegrationAccounts();
+      await loadIntegrations(false);
+    });
+
+    const removeBtn = document.createElement('button');
+    removeBtn.type = 'button';
+    removeBtn.className = 'danger-btn';
+    removeBtn.textContent = 'Remove';
+    removeBtn.addEventListener('click', async () => {
+      const ok = confirm('Remove this connected account? This revokes access in Composio.');
+      if (!ok) return;
+      await window.electronAPI.deleteComposioAccount(acc.id);
+      await loadIntegrationAccounts();
+      await loadIntegrations(false);
+    });
+
+    actions.appendChild(toggleBtn);
+    actions.appendChild(removeBtn);
+
+    row.appendChild(left);
+    row.appendChild(actions);
+    integrationAccountsList.appendChild(row);
+  });
+}
+
+function openAuthConfigSheet() {
+  if (!selectedIntegration?.id) return;
+  authConfigToolkitSlug = selectedIntegration.id;
+  if (!authConfigSheetOverlay) return;
+  authConfigSheetOverlay.classList.remove('hidden');
+  authConfigSheetOverlay.setAttribute('aria-hidden', 'false');
+  loadAuthConfigs();
+}
+
+function closeAuthConfigSheetOverlay() {
+  authConfigToolkitSlug = null;
+  if (authConfigSheetOverlay) {
+    authConfigSheetOverlay.classList.add('hidden');
+    authConfigSheetOverlay.setAttribute('aria-hidden', 'true');
+  }
+  if (authConfigList) authConfigList.innerHTML = '';
+  setAuthConfigSheetStatus('', 'neutral');
+  if (authWindowId && window.electronAPI?.closeAuthWindow) {
+    window.electronAPI.closeAuthWindow(authWindowId).catch(() => {});
+  }
+  authWindowId = null;
+}
+
+async function loadAuthConfigs() {
+  if (!authConfigToolkitSlug) return;
+  if (!window.electronAPI?.listComposioAuthConfigs) return;
+
+  if (authConfigList) authConfigList.innerHTML = '';
+  setAuthConfigSheetStatus('Loading auth methods…', 'neutral');
+
+  const [managed, unmanaged] = await Promise.all([
+    window.electronAPI.listComposioAuthConfigs(authConfigToolkitSlug, true),
+    window.electronAPI.listComposioAuthConfigs(authConfigToolkitSlug, false)
+  ]);
+
+  const all = [];
+  if (managed?.ok && Array.isArray(managed.data)) all.push(...managed.data.map((c) => ({ ...c, _managed: true })));
+  if (unmanaged?.ok && Array.isArray(unmanaged.data)) all.push(...unmanaged.data.map((c) => ({ ...c, _managed: false })));
+
+  const seen = new Set();
+  const deduped = all.filter((c) => {
+    if (!c?.id) return false;
+    if (seen.has(c.id)) return false;
+    seen.add(c.id);
+    return true;
+  });
+
+  if (deduped.length === 0) {
+    setAuthConfigSheetStatus('No enabled auth methods found for this integration.', 'error');
+    if (authConfigList) authConfigList.innerHTML = '<div class="empty-state">No auth methods available.</div>';
+    return;
+  }
+
+  setAuthConfigSheetStatus('', 'neutral');
+  renderAuthConfigList(deduped);
+}
+
+function renderAuthConfigList(configs) {
+  if (!authConfigList) return;
+  authConfigList.innerHTML = '';
+  configs.forEach((cfg) => {
+    const row = document.createElement('div');
+    row.className = 'auth-config-row';
+
+    const left = document.createElement('div');
+    left.className = 'auth-config-left';
+
+    const title = document.createElement('div');
+    title.className = 'auth-config-title';
+    title.textContent = cfg.name || 'Auth config';
+
+    const meta = document.createElement('div');
+    meta.className = 'auth-config-meta';
+    meta.textContent = `${cfg.authScheme || 'Auth'}${cfg._managed ? ' • Composio managed' : ''}`;
+
+    left.appendChild(title);
+    left.appendChild(meta);
+
+    const connectBtn = document.createElement('button');
+    connectBtn.type = 'button';
+    connectBtn.className = 'accent-btn';
+    connectBtn.textContent = 'Connect';
+    connectBtn.addEventListener('click', () => connectWithAuthConfig(cfg.id));
+
+    row.appendChild(left);
+    row.appendChild(connectBtn);
+    authConfigList.appendChild(row);
+  });
+}
+
+async function connectWithAuthConfig(authConfigId) {
+  if (!authConfigToolkitSlug) return;
+  if (!window.electronAPI?.createComposioConnectLink || !window.electronAPI?.waitForComposioConnection) return;
+  if (!window.electronAPI?.openAuthWindow) return;
+
+  setAuthConfigSheetStatus('Creating secure link…', 'neutral');
+
+  const link = await window.electronAPI.createComposioConnectLink({
+    toolkitSlug: authConfigToolkitSlug,
+    authConfigId
+  });
+
+  if (!link?.ok) {
+    setAuthConfigSheetStatus(link?.data?.error || 'Failed to create connect link.', 'error');
+    return;
+  }
+
+  const { connectedAccountId, redirectUrl } = link.data || {};
+  if (!connectedAccountId || !redirectUrl) {
+    setAuthConfigSheetStatus('Failed to create connect link.', 'error');
+    return;
+  }
+
+  const win = await window.electronAPI.openAuthWindow(redirectUrl);
+  if (!win?.success) {
+    setAuthConfigSheetStatus(win?.error || 'Failed to open auth window.', 'error');
+    return;
+  }
+  authWindowId = win.windowId;
+
+  setAuthConfigSheetStatus('Waiting for connection…', 'neutral');
+  const result = await window.electronAPI.waitForComposioConnection({
+    connectedAccountId,
+    timeoutMs: 120000
+  });
+
+  if (authWindowId) {
+    await window.electronAPI.closeAuthWindow(authWindowId).catch(() => {});
+    authWindowId = null;
+  }
+
+  if (!result?.ok) {
+    setAuthConfigSheetStatus(result?.data?.error || 'Connection failed or timed out.', 'error');
+    return;
+  }
+
+  setAuthConfigSheetStatus('Connected.', 'success');
+  setTimeout(() => setAuthConfigSheetStatus('', 'neutral'), 800);
+
+  closeAuthConfigSheetOverlay();
+  await loadIntegrationAccounts();
+  await loadIntegrations(true);
+}
+
+function clearIntegrationPlayground() {
+  if (integrationPlaygroundPrompt) integrationPlaygroundPrompt.value = '';
+  if (integrationPlaygroundOutput) integrationPlaygroundOutput.textContent = '';
+  setIntegrationPlaygroundStatus('', 'neutral');
+}
+
+async function runIntegrationPlayground() {
+  if (!selectedIntegration?.id) return;
+  if (!window.electronAPI?.runComposioTest) return;
+
+  const prompt = integrationPlaygroundPrompt?.value?.trim() || '';
+  if (!prompt) {
+    setIntegrationPlaygroundStatus('Enter a prompt.', 'error');
+    return;
+  }
+
+  setIntegrationPlaygroundStatus('Running…', 'neutral');
+  if (integrationPlaygroundOutput) integrationPlaygroundOutput.textContent = '';
+
+  const result = await window.electronAPI.runComposioTest(prompt, { toolkitSlug: selectedIntegration.id });
+  if (!result?.ok) {
+    if (result?.status === 401) {
+      setIntegrationPlaygroundStatus('COMPOSIO_API_KEY missing. Add it in Settings.', 'error');
+      return;
+    }
+    setIntegrationPlaygroundStatus(result?.data?.error || 'Tool router failed.', 'error');
+    return;
+  }
+
+  if (integrationPlaygroundOutput) integrationPlaygroundOutput.textContent = result?.data?.message || '';
+  setIntegrationPlaygroundStatus('Completed.', 'success');
+}
+
+const RECIPES = {
+  gmail: [
+    { title: 'Summarize unread', prompt: 'Summarize my unread emails from the last 24 hours. Keep it short, with next actions.' },
+    { title: 'Search recent threads', prompt: 'Find recent email threads about invoices or billing from the last 7 days and summarize key points.' },
+    { title: 'Draft follow-up', prompt: 'Draft a polite follow-up email to the last thread I replied to, asking for status and next steps.' }
+  ],
+  googlecalendar: [
+    { title: 'Today at a glance', prompt: 'Summarize my calendar for today, highlight conflicts, and suggest prep notes.' },
+    { title: 'Find next meeting', prompt: 'What is my next meeting and who is on it? Summarize context if available.' },
+    { title: 'Block focus time', prompt: 'Create two 60-minute focus blocks this week in my calendar during working hours.' }
+  ],
+  googledrive: [
+    { title: 'Find a doc', prompt: 'Find the most relevant Google Drive doc about our roadmap and summarize it.' },
+    { title: 'Summarize folder', prompt: 'Summarize the latest files in my Drive root or most recent folder and group by topic.' },
+    { title: 'Create a note', prompt: 'Create a new doc titled “WZRD.tech Notes” and add a short outline for today.' }
+  ],
+  slack: [
+    { title: 'Post update', prompt: 'Post a concise standup update to a channel I specify. Ask me for the channel if needed.' },
+    { title: 'Summarize channel', prompt: 'Summarize the last 50 messages in a channel I specify, highlight decisions and action items.' },
+    { title: 'Find decision', prompt: 'Search for the most recent decision about priorities in Slack and summarize it.' }
+  ],
+  github: [
+    { title: 'Create issue', prompt: 'Create a GitHub issue for a bug I describe. Ask me for repo if needed.' },
+    { title: 'Summarize PRs', prompt: 'Summarize open pull requests in a repo I specify with risk and suggested review order.' },
+    { title: 'Triage notifications', prompt: 'Summarize my GitHub notifications and group by urgency.' }
+  ],
+  notion: [
+    { title: 'Create page', prompt: 'Create a Notion page titled “WZRD.tech Plan” with a short outline and checklist.' },
+    { title: 'Find doc', prompt: 'Find the most relevant Notion doc about onboarding and summarize it.' },
+    { title: 'Summarize workspace', prompt: 'Summarize recent changes in my Notion workspace in the last 7 days.' }
+  ],
+  linear: [
+    { title: 'Create ticket', prompt: 'Create a Linear issue for a feature I describe. Ask me for project/team if needed.' },
+    { title: 'My active issues', prompt: 'List my active Linear issues and suggest what to tackle next.' },
+    { title: 'Weekly summary', prompt: 'Summarize changes in our Linear backlog this week.' }
+  ],
+  jira: [
+    { title: 'Create ticket', prompt: 'Create a Jira ticket for a bug I describe. Ask me for project key if needed.' },
+    { title: 'Sprint status', prompt: 'Summarize current sprint status and blockers.' },
+    { title: 'Triage backlog', prompt: 'Summarize high priority backlog items and recommend order.' }
+  ],
+  figma: [
+    { title: 'Find design', prompt: 'Find the latest Figma file I worked on and summarize what changed.' },
+    { title: 'Export assets', prompt: 'Export key assets from a Figma file I specify. Ask me for file link if needed.' },
+    { title: 'Design review', prompt: 'Summarize comments in a Figma file I specify and propose next steps.' }
+  ],
+  hubspot: [
+    { title: 'Pipeline summary', prompt: 'Summarize the current HubSpot pipeline and highlight deals at risk.' },
+    { title: 'Draft follow-up', prompt: 'Draft a follow-up message for a contact I specify. Ask me for contact details if needed.' },
+    { title: 'Recent activity', prompt: 'Summarize recent HubSpot activity in the last 7 days.' }
+  ]
+};
+
+function renderIntegrationRecipes() {
+  if (!integrationRecipesGrid) return;
+  integrationRecipesGrid.innerHTML = '';
+  if (!selectedIntegration) return;
+  const key = getIntegrationCanonicalKey(selectedIntegration);
+  const recipes = RECIPES[key] || [];
+
+  if (recipes.length === 0) {
+    integrationRecipesGrid.innerHTML = '<div class="empty-state">No recipes yet for this integration.</div>';
+    return;
+  }
+
+  recipes.forEach((r) => {
+    const card = document.createElement('button');
+    card.type = 'button';
+    card.className = 'recipe-card glass-panel';
+    card.innerHTML = `<div class="recipe-title">${escapeHtml(r.title)}</div><div class="recipe-desc">${escapeHtml(r.prompt)}</div>`;
+    card.addEventListener('click', async () => {
+      setIntegrationDrawerTab('playground');
+      if (integrationPlaygroundPrompt) integrationPlaygroundPrompt.value = r.prompt;
+      await runIntegrationPlayground();
+    });
+    integrationRecipesGrid.appendChild(card);
+  });
 }
 
 function closeAutomationHistory() {

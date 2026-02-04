@@ -131,6 +131,14 @@ contextBridge.exposeInMainWorld('electronAPI', {
     return ipcRenderer.invoke('backend:restart');
   },
 
+  // In-app auth window (OAuth)
+  openAuthWindow: async (url) => {
+    return ipcRenderer.invoke('authWindow:open', { url });
+  },
+  closeAuthWindow: async (windowId) => {
+    return ipcRenderer.invoke('authWindow:close', { windowId });
+  },
+
   // Integrations
   getIntegrations: async () => {
     const response = await fetch(`${SERVER_URL}/api/integrations`);
@@ -155,11 +163,111 @@ contextBridge.exposeInMainWorld('electronAPI', {
     }
     return { ok: response.ok, status: response.status, data };
   },
-  runComposioTest: async (prompt, externalUserId = null) => {
+  listComposioAuthConfigs: async (toolkitSlug, managed = true) => {
+    const query = `?toolkitSlug=${encodeURIComponent(toolkitSlug)}&managed=${managed ? '1' : '0'}`;
+    const response = await fetch(`${SERVER_URL}/api/composio/auth-configs${query}`);
+    let data = null;
+    try {
+      data = await response.json();
+    } catch (_err) {
+      data = null;
+    }
+    return { ok: response.ok, status: response.status, data };
+  },
+  listComposioAccounts: async (toolkitSlug) => {
+    const query = `?toolkitSlug=${encodeURIComponent(toolkitSlug)}`;
+    const response = await fetch(`${SERVER_URL}/api/composio/accounts${query}`);
+    let data = null;
+    try {
+      data = await response.json();
+    } catch (_err) {
+      data = null;
+    }
+    return { ok: response.ok, status: response.status, data };
+  },
+  createComposioConnectLink: async ({ toolkitSlug, authConfigId = null, callbackUrl = null }) => {
+    const response = await fetch(`${SERVER_URL}/api/composio/accounts/link`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ toolkitSlug, authConfigId, callbackUrl })
+    });
+    let data = null;
+    try {
+      data = await response.json();
+    } catch (_err) {
+      data = null;
+    }
+    return { ok: response.ok, status: response.status, data };
+  },
+  waitForComposioConnection: async ({ connectedAccountId, timeoutMs = 120000 }) => {
+    const response = await fetch(`${SERVER_URL}/api/composio/accounts/wait`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ connectedAccountId, timeoutMs })
+    });
+    let data = null;
+    try {
+      data = await response.json();
+    } catch (_err) {
+      data = null;
+    }
+    return { ok: response.ok, status: response.status, data };
+  },
+  enableComposioAccount: async (id) => {
+    const response = await fetch(`${SERVER_URL}/api/composio/accounts/${encodeURIComponent(id)}/enable`, {
+      method: 'POST'
+    });
+    let data = null;
+    try {
+      data = await response.json();
+    } catch (_err) {
+      data = null;
+    }
+    return { ok: response.ok, status: response.status, data };
+  },
+  disableComposioAccount: async (id) => {
+    const response = await fetch(`${SERVER_URL}/api/composio/accounts/${encodeURIComponent(id)}/disable`, {
+      method: 'POST'
+    });
+    let data = null;
+    try {
+      data = await response.json();
+    } catch (_err) {
+      data = null;
+    }
+    return { ok: response.ok, status: response.status, data };
+  },
+  deleteComposioAccount: async (id) => {
+    const response = await fetch(`${SERVER_URL}/api/composio/accounts/${encodeURIComponent(id)}`, {
+      method: 'DELETE'
+    });
+    let data = null;
+    try {
+      data = await response.json();
+    } catch (_err) {
+      data = null;
+    }
+    return { ok: response.ok, status: response.status, data };
+  },
+  updateComposioAccount: async (id, payload) => {
+    const response = await fetch(`${SERVER_URL}/api/composio/accounts/${encodeURIComponent(id)}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload || {})
+    });
+    let data = null;
+    try {
+      data = await response.json();
+    } catch (_err) {
+      data = null;
+    }
+    return { ok: response.ok, status: response.status, data };
+  },
+  runComposioTest: async (prompt, { externalUserId = null, toolkitSlug = null } = {}) => {
     const response = await fetch(`${SERVER_URL}/api/composio/test`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt, externalUserId })
+      body: JSON.stringify({ prompt, externalUserId, toolkitSlug })
     });
     let data = null;
     try {

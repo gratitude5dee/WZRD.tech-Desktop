@@ -2,6 +2,7 @@ const { app, BrowserWindow, shell, ipcMain, powerSaveBlocker } = require('electr
 const path = require('path');
 const fs = require('fs');
 const { pathToFileURL } = require('url');
+const crypto = require('crypto');
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -19,6 +20,7 @@ if (isDev) {
 
 // Global window reference
 let mainWindow;
+const authWindows = new Map();
 let backendModule = null;
 let backendPort = 3001;
 let isQuitting = false;
@@ -40,19 +42,34 @@ function getDefaultSettings() {
   return {
     anthropicApiKey: '',
     composioApiKey: '',
-    opencodeApiKey: ''
+    opencodeApiKey: '',
+    externalUserId: ''
   };
+}
+
+function generateExternalUserId() {
+  return `wzrdtech_${crypto.randomUUID()}`;
 }
 
 function readSettings() {
   const { settingsPath } = getUserDataPaths();
   try {
     if (!fs.existsSync(settingsPath)) {
-      return getDefaultSettings();
+      const next = {
+        ...getDefaultSettings(),
+        externalUserId: generateExternalUserId()
+      };
+      writeSettings(next);
+      return next;
     }
     const raw = fs.readFileSync(settingsPath, 'utf8');
     const parsed = JSON.parse(raw);
-    return { ...getDefaultSettings(), ...parsed };
+    const next = { ...getDefaultSettings(), ...parsed };
+    if (!next.externalUserId) {
+      next.externalUserId = generateExternalUserId();
+      writeSettings(next);
+    }
+    return next;
   } catch (err) {
     console.warn('[SETTINGS] Failed to read settings:', err);
     return getDefaultSettings();
@@ -65,6 +82,7 @@ function writeEnvFile(settings) {
     `ANTHROPIC_API_KEY=${settings.anthropicApiKey || ''}`,
     `COMPOSIO_API_KEY=${settings.composioApiKey || ''}`,
     `OPENCODE_API_KEY=${settings.opencodeApiKey || ''}`,
+    `WZRDTECH_EXTERNAL_USER_ID=${settings.externalUserId || ''}`,
     `PORT=${backendPort}`
   ];
   fs.writeFileSync(envPath, lines.join('\n'));
@@ -80,6 +98,7 @@ function applyEnv(settings) {
   process.env.ANTHROPIC_API_KEY = settings.anthropicApiKey || '';
   process.env.COMPOSIO_API_KEY = settings.composioApiKey || '';
   process.env.OPENCODE_API_KEY = settings.opencodeApiKey || '';
+  process.env.WZRDTECH_EXTERNAL_USER_ID = settings.externalUserId || '';
   const { opencodeConfigPath } = getUserDataPaths();
   process.env.OPENCODE_CONFIG_PATH = opencodeConfigPath;
   const { dbPath } = getUserDataPaths();
@@ -112,6 +131,15 @@ async function stopBackend() {
 async function restartBackend() {
   await stopBackend();
   await startBackend();
+}
+
+function isAllowedAuthUrl(rawUrl) {
+  try {
+    const url = new URL(String(rawUrl || ''));
+    return url.protocol === 'https:';
+  } catch (_err) {
+    return false;
+  }
 }
 
 // Create Electron window
@@ -193,7 +221,12 @@ ipcMain.handle('settings:get', () => {
 });
 
 ipcMain.handle('settings:set', (_event, incoming) => {
-  const next = { ...getDefaultSettings(), ...(incoming || {}) };
+  // Preserve internal ids like externalUserId unless explicitly overwritten.
+  const current = readSettings();
+  const next = { ...getDefaultSettings(), ...current, ...(incoming || {}) };
+  if (!next.externalUserId) {
+    next.externalUserId = current.externalUserId || generateExternalUserId();
+  }
   writeSettings(next);
   applyEnv(next);
   return { success: true };
@@ -207,6 +240,71 @@ ipcMain.handle('backend:restart', async () => {
     console.error('[BACKEND] Restart failed:', err);
     return { success: false, error: err.message };
   }
+});
+
+ipcMain.handle('authWindow:open', async (_event, { url }) => {
+  if (!mainWindow) {
+    return { success: false, error: 'Main window not ready' };
+  }
+  if (!isAllowedAuthUrl(url)) {
+    return { success: false, error: 'Auth URL must be https' };
+  }
+
+  const win = new BrowserWindow({
+    width: 980,
+    height: 720,
+    parent: mainWindow,
+    modal: true,
+    show: false,
+    backgroundColor: '#0B0E18',
+    title: 'Connect account',
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true,
+      sandbox: true,
+      enableWebSQL: false,
+      webSecurity: true
+    }
+  });
+
+  win.removeMenu();
+
+  win.webContents.setWindowOpenHandler(({ url: nextUrl }) => {
+    // Route popups into the same window when possible.
+    if (isAllowedAuthUrl(nextUrl)) {
+      win.loadURL(nextUrl);
+    }
+    return { action: 'deny' };
+  });
+
+  win.webContents.on('will-navigate', (event, nextUrl) => {
+    if (!isAllowedAuthUrl(nextUrl)) {
+      event.preventDefault();
+    }
+  });
+
+  win.on('closed', () => {
+    authWindows.delete(win.id);
+  });
+
+  authWindows.set(win.id, win);
+
+  win.once('ready-to-show', () => {
+    win.show();
+  });
+
+  await win.loadURL(url);
+  return { success: true, windowId: win.id };
+});
+
+ipcMain.handle('authWindow:close', async (_event, { windowId }) => {
+  const id = Number(windowId);
+  const win = authWindows.get(id);
+  if (!win || win.isDestroyed()) {
+    return { success: false };
+  }
+  win.close();
+  return { success: true };
 });
 
 ipcMain.handle('power:toggle', (_event, enabled) => {
