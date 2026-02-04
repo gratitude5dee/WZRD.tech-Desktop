@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WZRD.tech</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Left Sidebar - Chat History -->
+    <aside class="left-sidebar" id="leftSidebar">
+      <div class="left-sidebar-header">
+        <button class="new-chat-sidebar-btn" onclick="startNewChat()" title="New chat">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          <span>New Chat</span>
+        </button>
+        <button class="settings-btn" id="settingsBtn" title="Settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.7 1.7 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 .6 1.7 1.7 0 0 0-.4 1.06V21a2 2 0 1 1-4 0v-.06a1.7 1.7 0 0 0-.4-1.06 1.7 1.7 0 0 0-1-.6 1.7 1.7 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-.6-1 1.7 1.7 0 0 0-1.06-.4H3a2 2 0 1 1 0-4h.06a1.7 1.7 0 0 0 1.06-.4 1.7 1.7 0 0 0 .6-1 1.7 1.7 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-.6 1.7 1.7 0 0 0 .4-1.06V3a2 2 0 1 1 4 0v.06a1.7 1.7 0 0 0 .4 1.06 1.7 1.7 0 0 0 1 .6 1.7 1.7 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.7 1.7 0 0 0 19.4 9c.28.3.46.64.6 1a1.7 1.7 0 0 0 1.06.4H21a2 2 0 1 1 0 4h-.06a1.7 1.7 0 0 0-1.06.4 1.7 1.7 0 0 0-.4 1.2z"></path>
+          </svg>
+        </button>
+        <button class="sidebar-collapse-btn" id="leftSidebarToggle" title="Collapse sidebar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </button>
+      </div>
+      <div class="chat-history-list" id="chatHistoryList">
+        <!-- Chat history items will be added here -->
+      </div>
+    </aside>
+
+    <!-- Left Sidebar Expand Button (visible when collapsed) -->
+    <button class="left-sidebar-expand-btn" id="leftSidebarExpand" title="Expand chat history">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="9 18 15 12 9 6"></polyline>
+      </svg>
+    </button>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Home View (shown when no messages) -->
+      <div class="home-view" id="homeView">
+      <div class="greeting-section">
+        <div class="greeting">
+          <div class="brand-hero">
+            <div class="wordmark-wrap">
+              <img src="../assets/wzrdtech-wordmark.png" alt="WZRD.tech" class="wordmark" id="wordmarkHero">
+              <div class="wordmark-fallback" id="wordmarkHeroFallback">WZRD.tech</div>
+            </div>
+            <p class="tagline">by 5-Dee Studios</p>
+            <p class="subtag">Liquid-glass AI workspace</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="input-container home-input">
+        <form id="homeForm" class="input-form">
+          <div class="input-wrapper">
+            <textarea
+              id="homeInput"
+              class="message-input"
+              placeholder="Ask me anything"
+              autocomplete="off"
+              rows="1"
+            ></textarea>
+            <div class="input-controls">
+              <div class="left-controls">
+                <input type="file" id="homeFileInput" class="file-input-hidden" multiple />
+                <button type="button" class="control-btn attach-btn" id="homeAttachBtn" title="Attach file">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                  </svg>
+                </button>
+                <button type="button" class="control-btn thinking-btn" id="homeThinkingBtn" title="Extended thinking ⇧⌘E">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                  </svg>
+                </button>
+              </div>
+              <div class="right-controls">
+                <!-- Provider Selector Dropdown -->
+                <div class="dropdown-container" id="homeProviderDropdown">
+                  <button type="button" class="provider-selector">
+                    <span class="provider-label">Claude</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </button>
+                  <div class="dropdown-menu provider-menu">
+                    <div class="dropdown-item selected" data-value="claude">
+                      <div class="item-row">
+                        <span class="item-label">Claude</span>
+                        <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                      </div>
+                      <span class="item-desc">Claude Agent SDK</span>
+                    </div>
+                    <div class="dropdown-item" data-value="opencode">
+                      <div class="item-row">
+                        <span class="item-label">Opencode</span>
+                      </div>
+                      <span class="item-desc">Opencode SDK</span>
+                    </div>
+                  </div>
+                </div>
+                <!-- Model Selector Dropdown -->
+                <div class="dropdown-container" id="homeModelDropdown">
+                  <button type="button" class="model-selector">
+                    <span class="model-label">Sonnet 4.5</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </button>
+                  <div class="dropdown-menu model-menu" data-provider="claude">
+                    <div class="dropdown-item" data-value="claude-opus-4-5-20250514">
+                      <div class="item-row">
+                        <span class="item-label">Opus 4.5</span>
+                      </div>
+                      <span class="item-desc">Most capable for complex work</span>
+                    </div>
+                    <div class="dropdown-item selected" data-value="claude-sonnet-4-5-20250514">
+                      <div class="item-row">
+                        <span class="item-label">Sonnet 4.5</span>
+                        <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                      </div>
+                      <span class="item-desc">Best for everyday tasks</span>
+                    </div>
+                    <div class="dropdown-item" data-value="claude-haiku-4-5-20250514">
+                      <div class="item-row">
+                        <span class="item-label">Haiku 4.5</span>
+                      </div>
+                      <span class="item-desc">Fastest for quick answers</span>
+                    </div>
+                  </div>
+                </div>
+                <button type="submit" class="send-btn" id="homeSendBtn" disabled>
+                  <svg class="send-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="12" y1="19" x2="12" y2="5"></line>
+                    <polyline points="5 12 12 5 19 12"></polyline>
+                  </svg>
+                  <svg class="stop-icon hidden" viewBox="0 0 24 24" fill="currentColor">
+                    <rect x="6" y="6" width="12" height="12" rx="2"></rect>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Chat View (shown when there are messages) -->
+    <div class="chat-view hidden" id="chatView">
+      <div class="chat-main">
+        <header class="chat-header">
+          <div class="chat-header-left">
+            <div class="chat-brand">
+              <img src="../assets/wzrdtech-wordmark.png" alt="WZRD.tech" class="wordmark wordmark--small" id="wordmarkChat">
+              <div class="wordmark-fallback wordmark-fallback--small">WZRD.tech</div>
+            </div>
+            <button class="chat-title-btn">
+              <span id="chatTitle">New chat</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+          </div>
+          <div class="chat-header-actions">
+            <button class="new-chat-btn" onclick="startNewChat()" title="New chat">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+            </button>
+            <button class="settings-btn" id="settingsBtnChat" title="Settings">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M19.4 15a1.7 1.7 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 .6 1.7 1.7 0 0 0-.4 1.06V21a2 2 0 1 1-4 0v-.06a1.7 1.7 0 0 0-.4-1.06 1.7 1.7 0 0 0-1-.6 1.7 1.7 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-.6-1 1.7 1.7 0 0 0-1.06-.4H3a2 2 0 1 1 0-4h.06a1.7 1.7 0 0 0 1.06-.4 1.7 1.7 0 0 0 .6-1 1.7 1.7 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-.6 1.7 1.7 0 0 0 .4-1.06V3a2 2 0 1 1 4 0v.06a1.7 1.7 0 0 0 .4 1.06 1.7 1.7 0 0 0 1 .6 1.7 1.7 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.7 1.7 0 0 0 19.4 9c.28.3.46.64.6 1a1.7 1.7 0 0 0 1.06.4H21a2 2 0 1 1 0 4h-.06a1.7 1.7 0 0 0-1.06.4 1.7 1.7 0 0 0-.4 1.2z"></path>
+              </svg>
+            </button>
+          </div>
+        </header>
+
+        <div class="messages-container" id="chatMessages">
+          <!-- Messages will be added here dynamically -->
+        </div>
+
+        <div class="chat-input-wrapper">
+          <div class="input-container">
+            <form id="chatForm" class="input-form">
+              <div class="input-wrapper">
+                <textarea
+                  id="messageInput"
+                  class="message-input"
+                  placeholder="Reply..."
+                  autocomplete="off"
+                  rows="1"
+                ></textarea>
+                <div class="input-controls">
+                  <div class="left-controls">
+                    <input type="file" id="chatFileInput" class="file-input-hidden" multiple />
+                    <button type="button" class="control-btn attach-btn" id="chatAttachBtn" title="Attach file">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                      </svg>
+                    </button>
+                    <button type="button" class="control-btn thinking-btn" id="chatThinkingBtn" title="Extended thinking ⇧⌘E">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                      </svg>
+                    </button>
+                  </div>
+                  <div class="right-controls">
+                    <!-- Provider Selector Dropdown -->
+                    <div class="dropdown-container" id="chatProviderDropdown">
+                      <button type="button" class="provider-selector">
+                        <span class="provider-label">Claude</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                      </button>
+                      <div class="dropdown-menu provider-menu">
+                        <div class="dropdown-item selected" data-value="claude">
+                          <div class="item-row">
+                            <span class="item-label">Claude</span>
+                            <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                              <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                          </div>
+                          <span class="item-desc">Claude Agent SDK</span>
+                        </div>
+                        <div class="dropdown-item" data-value="opencode">
+                          <div class="item-row">
+                            <span class="item-label">Opencode</span>
+                          </div>
+                          <span class="item-desc">Opencode SDK</span>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Model Selector Dropdown -->
+                    <div class="dropdown-container" id="chatModelDropdown">
+                      <button type="button" class="model-selector">
+                        <span class="model-label">Sonnet 4.5</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                      </button>
+                      <div class="dropdown-menu model-menu" data-provider="claude">
+                        <div class="dropdown-item" data-value="claude-opus-4-5-20250514">
+                          <div class="item-row">
+                            <span class="item-label">Opus 4.5</span>
+                          </div>
+                          <span class="item-desc">Most capable for complex work</span>
+                        </div>
+                        <div class="dropdown-item selected" data-value="claude-sonnet-4-5-20250514">
+                          <div class="item-row">
+                            <span class="item-label">Sonnet 4.5</span>
+                            <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                              <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                          </div>
+                          <span class="item-desc">Best for everyday tasks</span>
+                        </div>
+                        <div class="dropdown-item" data-value="claude-haiku-4-5-20250514">
+                          <div class="item-row">
+                            <span class="item-label">Haiku 4.5</span>
+                          </div>
+                          <span class="item-desc">Fastest for quick answers</span>
+                        </div>
+                      </div>
+                    </div>
+                    <button type="submit" class="send-btn" id="chatSendBtn" disabled>
+                      <svg class="send-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <line x1="12" y1="19" x2="12" y2="5"></line>
+                        <polyline points="5 12 12 5 19 12"></polyline>
+                      </svg>
+                      <svg class="stop-icon hidden" viewBox="0 0 24 24" fill="currentColor">
+                        <rect x="6" y="6" width="12" height="12" rx="2"></rect>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+          <p class="disclaimer">AI can make mistakes. Please double-check responses.</p>
+        </div>
+      </div>
+
+      <!-- Right Sidebar -->
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+          <h3>Progress</h3>
+          <button class="sidebar-toggle" id="sidebarToggle" title="Toggle sidebar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Steps/Todos Section -->
+        <div class="sidebar-section">
+          <div class="section-header" id="stepsHeader">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+            <span id="stepsCount">0 steps</span>
+          </div>
+          <div class="steps-list" id="stepsList">
+            <!-- Steps will be added here -->
+            <div class="empty-state" id="emptySteps">No active tasks</div>
+          </div>
+        </div>
+
+        <!-- Tool Calls Section -->
+        <div class="sidebar-section">
+          <div class="section-header">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+            </svg>
+            <span>Tool Calls</span>
+          </div>
+          <div class="tool-calls-list" id="toolCallsList">
+            <!-- Tool calls will be added here -->
+            <div class="empty-state" id="emptyTools">No tool calls yet</div>
+          </div>
+        </div>
+
+      </aside>
+    </div>
+    </div><!-- end main-content -->
+
+    <!-- Right Sidebar Expand Button (visible when collapsed) -->
+    <button class="right-sidebar-expand-btn" id="rightSidebarExpand" title="Expand sidebar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="15 18 9 12 15 6"></polyline>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Settings Modal -->
+  <div class="modal hidden" id="settingsModal">
+    <div class="modal-backdrop" id="settingsBackdrop"></div>
+    <div class="modal-card glass-panel">
+      <div class="modal-header">
+        <h2>Settings</h2>
+        <button class="modal-close-btn" id="settingsCloseBtn" title="Close settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-note">API keys are stored locally on this machine and used to start the backend.</p>
+        <div class="form-field">
+          <label for="anthropicKeyInput">Anthropic API Key</label>
+          <input type="password" id="anthropicKeyInput" placeholder="sk-ant-..." autocomplete="off">
+        </div>
+        <div class="form-field">
+          <label for="composioKeyInput">Composio API Key</label>
+          <input type="password" id="composioKeyInput" placeholder="composio_..." autocomplete="off">
+        </div>
+        <div class="form-field">
+          <label for="opencodeKeyInput">Opencode API Key</label>
+          <input type="password" id="opencodeKeyInput" placeholder="opc_..." autocomplete="off">
+        </div>
+        <div class="settings-status" id="settingsStatus"></div>
+      </div>
+      <div class="modal-actions">
+        <button class="ghost-btn" id="settingsCancelBtn">Cancel</button>
+        <button class="primary-btn" id="settingsSaveBtn">Save</button>
+        <button class="accent-btn" id="settingsRestartBtn">Restart Backend</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="renderer.js"></script>
+</body>
+</html>
